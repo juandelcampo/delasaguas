@@ -3,486 +3,702 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeLasAguas - Lab</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300&family=Montserrat:wght@100;200;300&family=JetBrains+Mono:wght@100;200&display=swap" rel="stylesheet">
+    <title>DeLasAguas - SystemOS</title>
     
     <script src="https://w.soundcloud.com/player/api.js"></script>
 
     <style>
-        /* --- RESET Y VARIABLES --- */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        /* --- RESET Y BASE OS --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         
-        :root {
-            --bg-base: #020202;
-            --text-main: #f5f5f5;
-            --text-muted: #7a7a7a;
-            --accent: #ffffff; 
-            --glass-bg: rgba(15, 15, 15, 0.4);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --transition-smooth: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
         body, html {
             width: 100vw; height: 100vh; 
-            background-color: var(--bg-base); color: var(--text-main);
-            font-family: 'Inter', sans-serif;
+            background: url('https://static.boredpanda.com/blog/wp-content/uploads/2017/06/DSC00330-Edit-59391339deded__880.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Tahoma, "Trebuchet MS", sans-serif;
             overflow: hidden; 
+            font-size: 12px; 
         }
 
-        /* --- RUIDO CINEMATOGRÁFICO --- */
-        .film-grain {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            pointer-events: none; z-index: 50; opacity: 0.04;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        /* WIDGET SOUNDCLOUD OCULTO */
+        #sc-widget-container { position: absolute; width: 1px; height: 1px; top: -100px; opacity: 0; pointer-events: none; }
+
+        /* --- ESCRITORIO E ICONOS --- */
+        #desktop-area {
+            height: calc(100vh - 38px); 
+            width: 100vw; padding: 20px; display: flex; flex-direction: column; flex-wrap: wrap; 
+            gap: 25px; align-content: flex-start; position: relative; z-index: 1;
         }
 
-        /* --- FONDO DE VIDEO LÍQUIDO --- */
-        #video-fondo {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -3; background-color: #000; overflow: hidden;
+        .desktop-icon {
+            width: 80px; display: flex; flex-direction: column; align-items: center;
+            text-align: center; color: white; cursor: pointer;
+            text-shadow: 1px 1px 2px #000; gap: 5px; margin-bottom: 10px;
         }
-        .hero-video-bg {
-            position: absolute; top: 50%; left: 50%;
-            width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh;
-            transform: translate(-50%, -50%);
-            z-index: 0; pointer-events: none; border: none; 
-            filter: grayscale(100%) blur(4px); opacity: 0.25; 
+        .desktop-icon img { width: 42px; height: 42px; filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.5)); image-rendering: pixelated;}
+        .desktop-icon span { padding: 2px 4px; border-radius: 2px; line-height: 1.2; }
+        .desktop-icon:active span { background: #0b61ff; }
+        .desktop-icon:active img { opacity: 0.7; filter: brightness(0.5) sepia(1) hue-rotate(200deg) saturate(5); }
+
+        /* --- SISTEMA DE VENTANAS (TEMA ESTILIZADO) --- */
+        .window-container {
+            position: absolute; background-color: #f4f4f4;
+            border: 1px solid #111; border-radius: 6px 6px 0 0;
+            box-shadow: 4px 4px 15px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column; overflow: hidden;
+            resize: both; min-width: 350px; min-height: 250px;
         }
 
-        /* --- PRELOADER --- */
-        #preloader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #000; z-index: 5000;
-            display: flex; justify-content: center; align-items: center;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-        #preloader.loaded { opacity: 0; visibility: hidden; }
-        .spinner {
-            width: 80px; height: 1px; background: rgba(255,255,255,0.05);
-            position: relative; animation: spinLine 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-        }
-        .spinner::after {
-            content: ''; position: absolute; top: 0; left: 0;
-            width: 20%; height: 100%; background: #fff; box-shadow: 0 0 10px #fff;
-        }
-        @keyframes spinLine { 0% { transform: rotate(0deg); } 100% { transform: rotate(180deg); } }
-
-        /* --- APP LAYOUT --- */
-        #app-container {
-            display: grid;
-            grid-template-areas: "sidebar main";
-            grid-template-columns: 380px 1fr;
-            height: 100vh; width: 100vw;
-            padding: 30px; padding-bottom: 130px; /* Deja espacio al reproductor */
-            gap: 30px;
-            position: relative; z-index: 10;
+        .window-container.minimized { display: none !important; }
+        .window-container.maximized {
+            top: 0 !important; left: 0 !important;
+            width: 100vw !important; height: calc(100vh - 38px) !important;
+            border-radius: 0; resize: none;
         }
 
-        /* --- SIDEBAR --- */
-        .sidebar {
-            grid-area: sidebar;
-            background: linear-gradient(to bottom, rgba(5,5,5,0.8) 0%, rgba(5,5,5,0.4) 100%);
-            padding: 50px 40px;
-            display: flex; flex-direction: column;
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            backdrop-filter: blur(20px) saturate(120%); -webkit-backdrop-filter: blur(20px) saturate(120%);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        /* Barra de Título */
+        .os-titlebar {
+            background: linear-gradient(to bottom, #4a4a4a 0%, #2b2b2b 100%);
+            padding: 4px 8px; height: 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #000; cursor: default;
         }
-
-        .logo {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 2.5rem; font-weight: 200; letter-spacing: 2px;
-            margin-bottom: 50px; color: var(--text-main);
-            text-transform: none; /* Respetar CamelCase */
-        }
-
-        .manifiesto {
-            font-size: 0.95rem; line-height: 1.8; color: var(--text-muted);
-            font-weight: 200; 
-        }
-        .manifiesto p { margin-bottom: 25px; }
-        .manifiesto strong { color: #fff; font-weight: 300; letter-spacing: 1px; }
-
-        /* --- ÁREA PRINCIPAL --- */
-        .main-view {
-            grid-area: main;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px) saturate(120%); -webkit-backdrop-filter: blur(20px) saturate(120%);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            padding: 40px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            
-            /* Lógica para No Scrollear */
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; 
-        }
-
-        .section-title {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.2rem; font-weight: 200; letter-spacing: 4px; text-transform: uppercase;
-            margin-bottom: 30px; color: #777;
-            border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;
-            flex-shrink: 0;
-        }
-
-        /* GRILLA DINÁMICA (3x2 Perfecta) */
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 Columnas */
-            grid-template-rows: repeat(2, 1fr);    /* 2 Filas */
-            gap: 25px;
-            flex-grow: 1; /* Ocupa todo el espacio restante sin scrollear */
-            min-height: 0; 
-        }
-
-        .video-card {
-            background: transparent; cursor: pointer; 
-            display: flex; flex-direction: column; gap: 10px;
-            min-height: 0;
-        }
-
-        .thumbnail-container {
-            flex-grow: 1; /* El thumbnail se estira para llenar la grilla */
-            position: relative; width: 100%; 
-            border-radius: 4px; overflow: hidden;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            transition: var(--transition-smooth);
-            background: #000;
-        }
-
-        .thumbnail-container img {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; filter: grayscale(70%) brightness(0.8); 
-            transition: var(--transition-smooth);
-        }
-
-        .video-card:hover .thumbnail-container { border-color: rgba(255,255,255,0.3); transform: translateY(-3px); }
-        .video-card:hover .thumbnail-container img { filter: grayscale(0%) brightness(1.1); transform: scale(1.03); }
-
-        /* BOTÓN PLAY SUTIL */
-        .play-overlay-btn {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
-            width: 40px; height: 40px; border-radius: 50%;
-            background-color: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.2); color: #fff;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 12px; padding-left: 2px; 
-            opacity: 0; transition: var(--transition-smooth);
-        }
-        .video-card:hover .play-overlay-btn { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-
-        /* INFO DEL VIDEO */
-        .video-info { flex-shrink: 0; height: 40px; }
-        .video-info h3 {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95rem; font-weight: 200; color: var(--text-main); letter-spacing: 0.5px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .video-info p {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.7rem; color: var(--text-muted); font-weight: 100; letter-spacing: 1px; text-transform: uppercase;
-        }
-
-        /* --- PLAYER BAR FLOTANTE --- */
-        .player-capsule {
-            position: fixed; bottom: 30px; left: 30px; right: 30px;
-            height: 70px;
-            background: rgba(8, 8, 8, 0.75);
-            backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%);
-            border: 1px solid var(--glass-border); border-radius: 35px;
-            display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-            padding: 0 40px; z-index: 100;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-        }
-
-        /* Izquierda */
-        .player-track-info { display: flex; flex-direction: column; justify-content: center; }
-        .player-track-info h4 { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 200; letter-spacing: 2px; margin-bottom: 2px; }
-        .player-track-info p { font-family: 'Inter', sans-serif; font-size: 0.65rem; color: var(--text-muted); font-weight: 200; letter-spacing: 4px; text-transform: uppercase; }
-
-        /* Centro */
-        .player-core { display: flex; align-items: center; gap: 30px; width: 450px; justify-content: center;}
+        .os-title { color: #eee; font-weight: bold; text-shadow: 1px 1px #000; display: flex; align-items: center; gap: 6px; font-size: 12px;}
+        .os-title img { width: 16px; height: 16px; image-rendering: pixelated; }
         
-        .premium-play-btn {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: transparent; border: 1px solid rgba(255,255,255,0.2);
-            color: var(--text-main);
-            display: flex; justify-content: center; align-items: center;
-            font-size: 13px; cursor: pointer; transition: var(--transition-smooth);
-            padding-left: 2px;
+        .os-controls { display: flex; gap: 3px; }
+        .os-btn {
+            width: 22px; height: 22px; border-radius: 3px; border: 1px solid #666;
+            color: white; font-weight: bold; font-family: Arial; font-size: 12px;
+            display: flex; justify-content: center; align-items: center; cursor: pointer;
+            box-shadow: inset 0 -1px 2px rgba(0,0,0,0.5); text-shadow: 1px 1px 1px rgba(0,0,0,0.8);
         }
-        .premium-play-btn:hover { background: var(--text-main); color: #000; transform: scale(1.05); }
+        .os-btn-blue { background: linear-gradient(to bottom, #666, #333); }
+        .os-btn-blue:active { background: #222; box-shadow: inset 0 2px 3px rgba(0,0,0,0.8); }
+        .os-btn-close { background: linear-gradient(to bottom, #c9402a, #8f1b0a); border-color: #e26f5d; }
+        .os-btn-close:active { background: #661004; box-shadow: inset 0 2px 3px rgba(0,0,0,0.8); }
 
-        .progress-wrapper { display: flex; align-items: center; gap: 15px; flex-grow: 1; }
+        /* Cuerpos de Ventana (Explorador estilizado) */
+        .os-explorer-body { display: flex; flex: 1; min-height: 0; border-top: 1px solid #666; background: #fff;}
         
-        .time-display { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 200; color: var(--text-muted); min-width: 40px; text-align: center; }
+        .os-sidebar-panel { width: 200px; background: linear-gradient(to bottom, #2b2b36, #1a1a24); padding: 15px; border-right: 1px solid #999; color: white; overflow-y: auto; }
+        .os-sidebar-box { background: #ece9d8; border-radius: 3px; overflow: hidden; box-shadow: 1px 1px 3px rgba(0,0,0,0.5); margin-bottom: 15px; }
+        .os-box-header { background: linear-gradient(to right, #ccc, #aaa); color: #000; font-weight: bold; padding: 5px 10px; font-size: 11px; border-bottom: 1px solid #999;}
+        .os-box-content { padding: 10px; color: #000; font-size: 11px; background: #fff;}
         
-        .progress-track {
-            flex-grow: 1; height: 20px; 
-            display: flex; align-items: center; cursor: pointer; position: relative;
+        .sidebar-link { display: flex; align-items: center; gap: 6px; color: #0033cc; cursor: pointer; margin-bottom: 8px; font-size: 11px;}
+        .sidebar-link:hover { color: #0077ff; text-decoration: underline; }
+        .sidebar-link img { width: 14px; height: 14px; image-rendering: pixelated;}
+
+        .os-main-content { flex: 1; padding: 20px; overflow-y: auto; background: #fdfdfd; }
+        
+        /* Bloc de Notas */
+        .notepad-body { flex: 1; display: flex; flex-direction: column; background: #fff; min-height: 0;}
+        .notepad-menubar { background: #d0d0d0; padding: 4px 8px; border-bottom: 1px solid #999; display: flex; gap: 15px; font-size: 12px; }
+        .notepad-textarea { flex: 1; border: none; resize: none; padding: 10px; font-family: 'Courier New', monospace; font-size: 14px; overflow-y: auto; outline: none; }
+
+        /* Visor Multimedia */
+        .media-viewer-body { flex: 1; background: #111; display: flex; justify-content: center; align-items: center; padding: 10px; min-height: 0; }
+        .media-viewer-body iframe { width: 100%; height: 100%; border: none; }
+        .media-viewer-body img { max-width: 100%; max-height: 100%; object-fit: contain; border: 2px solid #333; box-shadow: 0 0 10px rgba(0,0,0,0.8); background: #000; }
+
+        /* ICONOS DE ARCHIVO */
+        .grid-files { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; align-items: start; }
+        
+        .file-item { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; padding: 8px; border: 1px dotted transparent; border-radius: 4px; height: max-content;}
+        .file-item:hover { background-color: #dbeaff; border-color: #9ac6ff; }
+        
+        .file-item img.file-thumb { width: 100px; height: 75px; object-fit: cover; border: 1px solid #ccc; padding: 2px; background: #fff; box-shadow: 2px 2px 5px rgba(0,0,0,0.3); }
+        .file-item img.file-icon-img { width: 40px; height: 40px; image-rendering: pixelated; }
+        .file-item span { margin-top: 8px; font-size: 11px; word-break: break-word; color: #000; line-height: 1.2;}
+
+        /* --- REPRODUCTOR SOUNDAMP --- */
+        .soundamp-skin { background: #222; border: 2px solid #000; border-radius: 3px; resize: none; width: 340px !important; height: auto !important; box-shadow: 2px 2px 15px rgba(0,0,0,0.8); }
+        .soundamp-skin .os-titlebar { background: linear-gradient(to right, #111, #333, #111); height: 20px; border-bottom: 2px solid #000; padding: 2px 5px;}
+        .soundamp-body { padding: 15px; display: flex; flex-direction: column; gap: 12px; background: linear-gradient(to bottom, #3a3a40, #1a1a20); flex: 1; border-top: 1px solid #444;}
+        
+        .soundamp-screen { background: #050505; border: 2px inset #444; border-radius: 2px; padding: 8px 12px; font-family: 'Courier New', Courier, monospace; color: #00ff00; box-shadow: inset 0 0 10px rgba(0,255,0,0.1); display: flex; flex-direction: column; }
+        .soundamp-top-screen { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;}
+        #soundamp-time { font-size: 28px; font-weight: bold; letter-spacing: 1px; text-shadow: 0 0 5px #00ff00; }
+        
+        /* Animación Waveform de Audio */
+        .visualizer { display: flex; align-items: flex-end; gap: 2px; height: 18px; width: 40px; }
+        .vis-bar { width: 6px; background: #00ff00; height: 3px; transition: height 0.1s; }
+        .visualizer.playing .vis-bar { animation: eq 0.4s infinite alternate ease-in-out; }
+        .visualizer .vis-bar:nth-child(1) { animation-duration: 0.3s; }
+        .visualizer .vis-bar:nth-child(2) { animation-duration: 0.5s; }
+        .visualizer .vis-bar:nth-child(3) { animation-duration: 0.4s; }
+        .visualizer .vis-bar:nth-child(4) { animation-duration: 0.6s; }
+        @keyframes eq { 0% { height: 3px; } 100% { height: 100%; } }
+
+        .soundamp-kbps { font-size: 10px; color: #00aa00; text-align: right; line-height: 1.2;}
+        #soundamp-title { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px; text-transform: uppercase; background: #002200; padding: 2px; border: 1px solid #004400;}
+        
+        .soundamp-progress { height: 10px; background: #111; border: 1px solid #444; width: 100%; cursor: pointer; position: relative;}
+        .soundamp-fill { height: 100%; width: 0%; background: linear-gradient(to bottom, #00ff00, #008800); pointer-events: none;}
+
+        .soundamp-controls { display: flex; justify-content: center; gap: 8px; }
+        .soundamp-btn { background: linear-gradient(to bottom, #ddd, #999); border: 2px outset #eee; width: 45px; height: 28px; font-weight: bold; cursor: pointer; color: #000; font-size: 12px; display: flex; justify-content: center; align-items: center; }
+        .soundamp-btn:active { border: 2px inset #eee; background: #aaa; }
+
+        /* --- BARRA DE TAREAS --- */
+        #taskbar {
+            position: fixed; bottom: 0; left: 0; width: 100vw; height: 38px;
+            background: linear-gradient(to bottom, #303030, #111);
+            display: flex; align-items: center; z-index: 10000; border-top: 2px solid #555;
         }
         
-        .progress-line {
-            width: 100%; height: 1px; background: rgba(255,255,255,0.1); position: relative; transition: height 0.2s;
+        .start-btn {
+            background: linear-gradient(to bottom, #0078D7, #00427a);
+            color: white; font-weight: bold; font-size: 15px; font-style: italic;
+            height: 100%; padding: 0 20px 0 15px; border: none; border-radius: 0 15px 15px 0;
+            display: flex; align-items: center; gap: 8px; box-shadow: inset 1px 1px 2px rgba(255,255,255,0.3);
+            cursor: pointer; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); flex-shrink: 0; border-right: 1px solid #002244;
         }
-        .progress-track:hover .progress-line { height: 2px; }
+        .start-btn:active, .start-btn.active { background: #00427a; box-shadow: inset 1px 1px 5px rgba(0,0,0,0.8); }
 
-        .progress-fill {
-            height: 100%; width: 0%; background: var(--text-main);
-            position: absolute; top: 0; left: 0; pointer-events: none;
-            box-shadow: 0 0 10px rgba(255,255,255,0.3);
-        }
-
-        /* Derecha */
-        .player-right { display: flex; justify-content: flex-end; }
-
-        /* --- MODAL DE VIDEO --- */
-        #video-modal {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.98); z-index: 9999;
-            display: flex; justify-content: center; align-items: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
-        }
-        #video-modal.active { opacity: 1; pointer-events: auto; }
+        #taskbar-windows { flex: 1; display: flex; gap: 4px; padding: 0 10px; overflow: hidden; align-items: center; height: 100%;}
         
-        .modal-content { 
-            position: relative; width: 90%; max-width: 1400px; aspect-ratio: 21/9; 
-            background: #000; border: 1px solid var(--glass-border); border-radius: 4px; overflow: hidden; 
-            box-shadow: 0 40px 100px rgba(0,0,0,1); transform: scale(0.95); transition: var(--transition-smooth);
+        .taskbar-item {
+            background: linear-gradient(to bottom, #5a5a5a, #333);
+            border: 1px solid #222; border-radius: 3px; color: white;
+            padding: 0 10px; height: 28px; display: flex; align-items: center; gap: 8px;
+            cursor: pointer; min-width: 100px; max-width: 180px; font-size: 12px;
+            box-shadow: inset 1px 1px 1px rgba(255,255,255,0.1);
         }
-        #video-modal.active .modal-content { transform: scale(1); }
-        .modal-content iframe { width: 100%; height: 100%; border: none; }
+        .taskbar-item img { width: 16px; height: 16px; image-rendering: pixelated; }
+        .taskbar-item span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .taskbar-item:hover { background: linear-gradient(to bottom, #6a6a6a, #444); }
+        .taskbar-item.active { background: linear-gradient(to bottom, #222, #000); box-shadow: inset 0 2px 5px rgba(0,0,0,0.6); color: #ccc;}
+
+        .tray-area {
+            background: linear-gradient(to bottom, #222, #050505);
+            height: 100%; border-left: 1px solid #444; padding: 0 15px;
+            display: flex; align-items: center; gap: 15px; color: white; font-size: 12px;
+            box-shadow: inset 1px 0 1px rgba(255,255,255,0.1); flex-shrink: 0; position: relative;
+        }
+
+        /* --- CONTROL DE VOLUMEN --- */
+        #volume-popup {
+            position: absolute; bottom: 45px; right: 10px; width: 45px; height: 130px;
+            background: #e0e0e0; border: 1px solid #555; border-radius: 4px;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+            z-index: 10001;
+        }
+        input[type=range][orient=vertical] {
+            writing-mode: bt-lr; -webkit-appearance: slider-vertical;
+            width: 12px; height: 90px; cursor: pointer;
+        }
+
+        /* --- MENÚ DE INICIO --- */
+        #start-menu {
+            position: fixed; bottom: 40px; left: 0; width: 320px; height: 420px;
+            background: #fff; border: 1px solid #111; border-top-right-radius: 8px;
+            box-shadow: 4px -4px 15px rgba(0,0,0,0.6); z-index: 10001;
+            display: flex; flex-direction: column; overflow: hidden;
+            opacity: 0; pointer-events: none; transition: opacity 0.1s;
+        }
+        #start-menu.active { opacity: 1; pointer-events: auto; }
         
-        .close-btn { 
-            position: absolute; top: -50px; right: 0; color: var(--text-muted); 
-            font-family: 'Montserrat', sans-serif; font-size: 0.8rem; font-weight: 200; letter-spacing: 4px; 
-            cursor: pointer; transition: color 0.3s; 
+        .sm-header {
+            background: linear-gradient(to bottom, #2b2b36, #1a1a24); height: 55px;
+            display: flex; align-items: center; padding: 0 15px; gap: 12px; color: white; font-weight: bold; font-size: 15px; border-bottom: 2px solid #0078D7;
         }
-        .close-btn:hover { color: var(--text-main); }
+        .sm-header img { width: 38px; height: 38px; border: 2px solid rgba(255,255,255,0.6); border-radius: 4px; image-rendering: pixelated;}
+        
+        .sm-body { display: flex; flex: 1; }
+        .sm-left { flex: 1; padding: 8px; display: flex; flex-direction: column; gap: 4px; background: #fff;}
+        .sm-right { width: 140px; background: #e0e6ed; border-left: 1px solid #b5cbe6; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+        
+        .sm-item { display: flex; align-items: center; gap: 10px; padding: 10px; cursor: pointer; color: #000; border-radius: 4px;}
+        .sm-item:hover { background: #0078D7; color: white; }
+        .sm-item img { width: 28px; height: 28px; image-rendering: pixelated;}
+        .sm-item span { font-size: 12px; font-weight: bold;}
+        .sm-item p { font-size: 10px; color: #666; font-weight: normal; margin: 0;}
+        .sm-item:hover p { color: #ddd; }
+        
+        .sm-footer {
+            background: linear-gradient(to bottom, #4a4a4a, #2b2b2b); height: 45px;
+            display: flex; justify-content: flex-end; align-items: center; padding: 0 15px; border-top: 1px solid #666;
+        }
+        .sm-footer-btn { display: flex; align-items: center; gap: 8px; color: white; font-size: 12px; cursor: pointer; padding: 5px 10px; border-radius: 3px;}
+        .sm-footer-btn:hover { background: rgba(255,255,255,0.1); }
+        .sm-footer-btn img { width: 22px; height: 22px; image-rendering: pixelated;}
 
-        /* SC WIDGET INVISIBLE */
-        #sc-widget { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-
-        /* --- RESPONSIVIDAD (Celulares sí tendrán scroll por espacio físico) --- */
-        @media (max-width: 1100px) {
-            #app-container { flex-direction: column; padding: 20px 20px 120px 20px; gap: 20px; }
-            .sidebar { flex: none; height: auto; padding: 30px; }
-            .main-view { overflow-y: auto; display: block; }
-            .video-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; height: auto; }
-            .thumbnail-container { aspect-ratio: 16/9; }
-            .player-capsule { bottom: 20px; left: 20px; right: 20px; padding: 0 20px; grid-template-columns: auto 1fr; gap: 20px; }
-            .player-right { display: none; }
-            .player-core { width: 100%; }
-        }
-        @media (max-width: 768px) {
-            .video-grid { grid-template-columns: 1fr; }
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="film-grain"></div>
-
-    <div id="preloader"><div class="spinner"></div></div>
-
-    <div id="video-fondo">
-        <iframe class="hero-video-bg" src="https://www.youtube-nocookie.com/embed/8hLqNGp78b8?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=8hLqNGp78b8&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <div id="sc-widget-container">
+        <iframe id="sc-widget" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/juan-manuel-309/delasaguas-jam-08-2010&auto_play=false"></iframe>
     </div>
 
-    <iframe id="sc-widget" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/juan-manuel-309/delasaguas-jam-08-2010&auto_play=false"></iframe>
-
-    <div id="app-container">
-        
-        <aside class="sidebar">
-            <div class="logo">DeLasAguas</div>
-            <div class="manifiesto">
-                <p>Un laboratorio audiovisual que disolvió las fronteras entre la música y el videoarte.</p>
-                <p>Transitando libremente desde la bossa nova y el funk hasta la psicodelia y el stoner, sus presentaciones en vivo eran rituales ininterrumpidos de inmersión total.</p>
-                <p>Su legado se condensa en <strong>"Los sueños de Pellicciaro"</strong>, un proyecto independiente donde el sonido, las proyecciones y la obra gráfica convergen en una sola pieza indivisible.</p>
-            </div>
-        </aside>
-
-        <main class="main-view">
-            <h2 class="section-title">Archivos Visuales</h2>
-            <div class="video-grid">
-                
-                <div class="video-card" data-id="KVc3yQr89to">
-                    <div class="thumbnail-container"><img src="https://img.youtube.com/vi/KVc3yQr89to/hqdefault.jpg" alt="Video">
-                    <div class="play-overlay-btn">▶</div></div>
-                    <div class="video-info"><h3 class="yt-title-fetch">Cargando...</h3><p>DeLasAguas</p></div>
-                </div>
-
-                <div class="video-card" data-id="qiNnFuErDOw">
-                    <div class="thumbnail-container"><img src="https://img.youtube.com/vi/qiNnFuErDOw/hqdefault.jpg" alt="Video">
-                    <div class="play-overlay-btn">▶</div></div>
-                    <div class="video-info"><h3 class="yt-title-fetch">Cargando...</h3><p>DeLasAguas</p></div>
-                </div>
-
-                <div class="video-card" data-id="hwLEuHiV1kE">
-                    <div class="thumbnail-container"><img src="https://img.youtube.com/vi/hwLEuHiV1kE/hqdefault.jpg" alt="Video">
-                    <div class="play-overlay-btn">▶</div></div>
-                    <div class="video-info"><h3 class="yt-title-fetch">Cargando...</h3><p>DeLasAguas</p></div>
-                </div>
-
-                <div class="video-card" data-id="VkqwETnA510">
-                    <div class="thumbnail-container"><img src="https://img.youtube.com/vi/VkqwETnA510/hqdefault.jpg" alt="Video">
-                    <div class="play-overlay-btn">▶</div></div>
-                    <div class="video-info"><h3 class="yt-title-fetch">Cargando...</h3><p>DeLasAguas</p></div>
-                </div>
-
-                <div class="video-card" data-id="bTNAxV6jn2Y">
-                    <div class="thumbnail-container"><img src="https://img.youtube.com/vi/bTNAxV6jn2Y/hqdefault.jpg" alt="Video">
-                    <div class="play-overlay-btn">▶</div></div>
-                    <div class="video-info"><h3 class="yt-title-fetch">Cargando...</h3><p>DeLasAguas</p></div>
-                </div>
-
-                <div class="video-card" data-id="MEvLUSr2e9Y">
-                    <div class="thumbnail-container"><img src="https://img.youtube.com/vi/MEvLUSr2e9Y/hqdefault.jpg" alt="Video">
-                    <div class="play-overlay-btn">▶</div></div>
-                    <div class="video-info"><h3 class="yt-title-fetch">Cargando...</h3><p>DeLasAguas</p></div>
-                </div>
-
-            </div>
-        </main>
-    </div>
-
-    <div class="player-capsule">
-        <div class="player-track-info">
-            <h4>El Largo</h4>
-            <p>DeLasAguas</p>
+    <div id="desktop-area">
+        <div class="desktop-icon" onclick="openWindow('notepad-leeme', 'LEEME.txt', 'https://win98icons.alexmeub.com/icons/png/notepad_file-0.png')">
+            <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-0.png" alt="Notepad">
+            <span>LEEME.txt</span>
         </div>
+        <div class="desktop-icon" onclick="openWindow('soundamp-player', 'SoundAmp', 'https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-3.png')">
+            <img src="https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-3.png" alt="Música">
+            <span>Mi Música</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('folder-images', 'Mis Imágenes', 'https://win98icons.alexmeub.com/icons/png/directory_closed-4.png')">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Imágenes">
+            <span>Mis Imágenes</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('folder-videos', 'Mis Videos', 'https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png')">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" alt="Videos">
+            <span>Mis Videos</span>
+        </div>
+    </div>
 
-        <div class="player-core">
-            <button id="main-play" class="premium-play-btn">▶</button>
-            <div class="progress-wrapper">
-                <span id="time-current" class="time-display">0:00</span>
-                <div id="progress-container" class="progress-track">
-                    <div class="progress-line">
-                        <div id="progress-bar" class="progress-fill"></div>
+
+    <div id="notepad-leeme" class="window-container hidden" style="top: 50px; left: 350px; width: 450px; height: 350px;">
+        <div class="os-titlebar">
+            <div class="os-title"><img src="https://win98icons.alexmeub.com/icons/png/notepad_file-0.png"> LEEME.txt - Bloc de notas</div>
+            <div class="os-controls">
+                <div class="os-btn os-btn-blue" onclick="minimizeWindow('notepad-leeme')">_</div>
+                <div class="os-btn os-btn-blue" onclick="maximizeWindow('notepad-leeme')">□</div>
+                <div class="os-btn os-btn-close" onclick="closeWindow('notepad-leeme')">X</div>
+            </div>
+        </div>
+        <div class="notepad-body">
+            <div class="notepad-menubar"><span>Archivo</span> <span>Edición</span> <span>Formato</span> <span>Ver</span> <span>Ayuda</span></div>
+            <textarea class="notepad-textarea" readonly>DeLasAguas
+
+Un laboratorio audiovisual que disolvió las fronteras entre la música y el videoarte.
+
+Transitando libremente desde la bossa nova y el funk hasta la psicodelia y el stoner, sus presentaciones en vivo eran rituales ininterrumpidos de inmersión total.
+
+Su legado se condensa en "Los sueños de Pellicciaro", un proyecto independiente donde el sonido, las proyecciones y la obra gráfica convergen en una sola pieza indivisible.</textarea>
+        </div>
+    </div>
+
+    <div id="soundamp-player" class="window-container soundamp-skin hidden" style="top: 420px; left: 350px;">
+        <div class="os-titlebar">
+            <div class="os-title" style="color:#ccc; font-weight:normal;">SOUNDAMP 3.0</div>
+            <div class="os-controls">
+                <div class="os-btn os-btn-blue" style="background:#555; border-color:#777;" onclick="minimizeWindow('soundamp-player')">_</div>
+                <div class="os-btn os-btn-close" style="background:#555; border-color:#777;" onclick="closeWindow('soundamp-player')">X</div>
+            </div>
+        </div>
+        <div class="soundamp-body">
+            <div class="soundamp-screen">
+                <div class="soundamp-top-screen">
+                    <div id="soundamp-time">00:00</div>
+                    <div class="visualizer" id="visualizer">
+                        <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
+                    </div>
+                    <div class="soundamp-kbps">192 kbps<br>44 kHz</div>
+                </div>
+                <div id="soundamp-title">DELASAGUAS - EL LARGO *** </div>
+                <div class="soundamp-progress" id="soundamp-progress-bar" onclick="seekAudio(event)">
+                    <div class="soundamp-fill" id="soundamp-progress-fill"></div>
+                </div>
+            </div>
+            <div class="soundamp-controls">
+                <button class="soundamp-btn">|&lt;</button>
+                <button class="soundamp-btn" onclick="scPlay()">►</button>
+                <button class="soundamp-btn" onclick="scPause()">||</button>
+                <button class="soundamp-btn" onclick="scStop()">■</button>
+                <button class="soundamp-btn">&gt;|</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="folder-images" class="window-container hidden" style="top: 60px; left: 150px; width: 700px; height: 450px;">
+        <div class="os-titlebar">
+            <div class="os-title"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png"> Mis Imágenes</div>
+            <div class="os-controls">
+                <div class="os-btn os-btn-blue" onclick="minimizeWindow('folder-images')">_</div>
+                <div class="os-btn os-btn-blue" onclick="maximizeWindow('folder-images')">□</div>
+                <div class="os-btn os-btn-close" onclick="closeWindow('folder-images')">X</div>
+            </div>
+        </div>
+        <div class="os-explorer-body">
+            <div class="os-sidebar-panel">
+                <div class="os-sidebar-box"><div class="os-box-header">Tareas de imagen</div><div class="os-box-content">Ver como presentación</div></div>
+                <div class="os-sidebar-box">
+                    <div class="os-box-header">Otros lugares</div>
+                    <div class="os-box-content">
+                        <div class="sidebar-link" onclick="openWindow('folder-videos', 'Mis Videos', 'https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png')"><img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png"> Mis Videos</div>
+                        <div class="sidebar-link" onclick="openWindow('soundamp-player', 'SoundAmp', 'https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-3.png')"><img src="https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-3.png"> Mi Música</div>
+                        <div class="sidebar-link" onclick="openWindow('notepad-leeme', 'LEEME.txt', 'https://win98icons.alexmeub.com/icons/png/notepad_file-0.png')"><img src="https://win98icons.alexmeub.com/icons/png/notepad_file-0.png"> LEEME.txt</div>
                     </div>
                 </div>
-                <span id="time-total" class="time-display">0:00</span>
+            </div>
+            <div class="os-main-content grid-files">
+                <div class="file-item" onclick="openMedia('img', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgPsdaTj9ebqPIdCv8cc0ofCD7OjIh7y264BCYUvoTINijmxaU6LJVrMgh1lpkAD1bH-Wn62BIWjQczsNkF8cHSakDbgeLFDdnUhZyZhzOgVYSqu9phnU4HutjuZOCgHjt6Dk2Vs9kUDnw/s1600/Dla_prov.jpg', 'Dla_prov.jpg')">
+                    <img class="file-thumb" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgPsdaTj9ebqPIdCv8cc0ofCD7OjIh7y264BCYUvoTINijmxaU6LJVrMgh1lpkAD1bH-Wn62BIWjQczsNkF8cHSakDbgeLFDdnUhZyZhzOgVYSqu9phnU4HutjuZOCgHjt6Dk2Vs9kUDnw/s1600/Dla_prov.jpg" referrerpolicy="no-referrer">
+                    <span>Dla_prov.jpg</span>
+                </div>
+                <div class="file-item" onclick="openMedia('img', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_JczWFySWlfOX7f5xAELbDkjKwvgxlWwgPnmdD5DTvnp_zicjcrshyphenhyphen78lee2I-MEP2LglMxmBo-Jpgf4BPRRLFs6C0CfjXKdSQW5T9Rf9XRCUG6FbC86Wsx30W_Q3uKKdp1az7h3cvpw/s1600/EPR.jpg', 'EPR.jpg')">
+                    <img class="file-thumb" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_JczWFySWlfOX7f5xAELbDkjKwvgxlWwgPnmdD5DTvnp_zicjcrshyphenhyphen78lee2I-MEP2LglMxmBo-Jpgf4BPRRLFs6C0CfjXKdSQW5T9Rf9XRCUG6FbC86Wsx30W_Q3uKKdp1az7h3cvpw/s1600/EPR.jpg" referrerpolicy="no-referrer">
+                    <span>EPR.jpg</span>
+                </div>
+                 <div class="file-item" onclick="openMedia('img', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHuIyhlzrd5RO2p7NVkoIBJ06uSDTtIzCQ_Pe6ctGmPtJ8_7Np7CLlAOIbXQRtsa09hyphenhyphenVQObMuVTSNRDJpgU9h5-DyNAWEvPRXyCw_OolRyC6KqGyl3kQUSWQDLFXhF9qwWHbRem3S_cs/s1600/De+las+Aguas.jpg', 'De_las_Aguas.jpg')">
+                    <img class="file-thumb" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHuIyhlzrd5RO2p7NVkoIBJ06uSDTtIzCQ_Pe6ctGmPtJ8_7Np7CLlAOIbXQRtsa09hyphenhyphenVQObMuVTSNRDJpgU9h5-DyNAWEvPRXyCw_OolRyC6KqGyl3kQUSWQDLFXhF9qwWHbRem3S_cs/s1600/De+las+Aguas.jpg" referrerpolicy="no-referrer">
+                    <span>De_las_Aguas.jpg</span>
+                </div>
             </div>
         </div>
-        
-        <div class="player-right"></div>
     </div>
 
-    <div id="video-modal">
-        <div class="modal-content">
-            <div class="close-btn" id="close-modal">CERRAR</div>
-            <iframe id="modal-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <div id="folder-videos" class="window-container hidden" style="top: 80px; left: 250px; width: 750px; height: 500px;">
+        <div class="os-titlebar">
+            <div class="os-title"><img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png"> Mis Videos</div>
+            <div class="os-controls">
+                <div class="os-btn os-btn-blue" onclick="minimizeWindow('folder-videos')">_</div>
+                <div class="os-btn os-btn-blue" onclick="maximizeWindow('folder-videos')">□</div>
+                <div class="os-btn os-btn-close" onclick="closeWindow('folder-videos')">X</div>
+            </div>
+        </div>
+        <div class="os-explorer-body">
+            <div class="os-sidebar-panel">
+                <div class="os-sidebar-box"><div class="os-box-header">Tareas de video</div><div class="os-box-content">Reproducir todo</div></div>
+                <div class="os-sidebar-box">
+                    <div class="os-box-header">Otros lugares</div>
+                    <div class="os-box-content">
+                        <div class="sidebar-link" onclick="openWindow('folder-images', 'Mis Imágenes', 'https://win98icons.alexmeub.com/icons/png/directory_closed-4.png')"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png"> Mis Imágenes</div>
+                        <div class="sidebar-link" onclick="openWindow('soundamp-player', 'SoundAmp', 'https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-3.png')"><img src="https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-3.png"> Mi Música</div>
+                        <div class="sidebar-link" onclick="openWindow('notepad-leeme', 'LEEME.txt', 'https://win98icons.alexmeub.com/icons/png/notepad_file-0.png')"><img src="https://win98icons.alexmeub.com/icons/png/notepad_file-0.png"> LEEME.txt</div>
+                    </div>
+                </div>
+            </div>
+            <div class="os-main-content grid-files">
+                <div class="file-item" onclick="openMedia('video', 'KVc3yQr89to', 'NuevoDía.avi')">
+                    <img class="file-thumb" src="https://img.youtube.com/vi/KVc3yQr89to/hqdefault.jpg"><span>NuevoDía.avi</span>
+                </div>
+                <div class="file-item" onclick="openMedia('video', 'MEvLUSr2e9Y', 'Lección7.wmv')">
+                    <img class="file-thumb" src="https://img.youtube.com/vi/MEvLUSr2e9Y/hqdefault.jpg"><span>Lección7.wmv</span>
+                </div>
+                <div class="file-item" onclick="openMedia('video', 'bTNAxV6jn2Y', 'Lección11_vivo.mpg')">
+                    <img class="file-thumb" src="https://img.youtube.com/vi/bTNAxV6jn2Y/hqdefault.jpg"><span>Lección11_vivo.mpg</span>
+                </div>
+                 <div class="file-item" onclick="openMedia('video', '8hLqNGp78b8', 'MillonesDeSonidos.avi')">
+                    <img class="file-thumb" src="https://img.youtube.com/vi/8hLqNGp78b8/hqdefault.jpg"><span>MillonesDeSonidos.avi</span>
+                </div>
+                 <div class="file-item" onclick="openMedia('video', 'hwLEuHiV1kE', 'Fine.mp4')">
+                    <img class="file-thumb" src="https://img.youtube.com/vi/hwLEuHiV1kE/hqdefault.jpg"><span>Fine.mp4</span>
+                </div>
+                 <div class="file-item" onclick="openMedia('video', 'qiNnFuErDOw', 'Porno.avi')">
+                    <img class="file-thumb" src="https://img.youtube.com/vi/qiNnFuErDOw/hqdefault.jpg"><span>Porno.avi</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="media-viewer" class="window-container hidden" style="top: 50px; left: 150px; width: 800px; height: 550px; z-index: 500;">
+        <div class="os-titlebar">
+            <div class="os-title" id="media-title"><img src="https://win98icons.alexmeub.com/icons/png/video_file-0.png"> Reproductor Multimedia</div>
+            <div class="os-controls">
+                <div class="os-btn os-btn-blue" onclick="minimizeWindow('media-viewer')">_</div>
+                <div class="os-btn os-btn-blue" onclick="maximizeWindow('media-viewer')">□</div>
+                <div class="os-btn os-btn-close" onclick="closeViewer()">X</div>
+            </div>
+        </div>
+        <div class="media-viewer-body">
+            <iframe id="viewer-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen style="display:none;"></iframe>
+            <img id="viewer-image" src="" style="display:none;" referrerpolicy="no-referrer">
+        </div>
+    </div>
+
+
+    <div id="start-menu" class="hidden">
+        <div class="sm-header">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" style="image-rendering: pixelated;">
+            <span>Usuario Local</span>
+        </div>
+        <div class="sm-body">
+            <div class="sm-left">
+                <div class="sm-item" onclick="openWindow('soundamp-player', 'SoundAmp', 'https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-3.png')">
+                    <img src="https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-3.png">
+                    <div><span>Reproductor de Música</span><p>SoundAmp 3.0</p></div>
+                </div>
+                <div class="sm-item" onclick="openWindow('notepad-leeme', 'LEEME.txt', 'https://win98icons.alexmeub.com/icons/png/notepad_file-0.png')">
+                    <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-0.png">
+                    <div><span>Bloc de notas</span><p>Editor de texto</p></div>
+                </div>
+            </div>
+            <div class="sm-right">
+                <div class="sm-item" onclick="openWindow('folder-videos', 'Mis Videos', 'https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png')"><span>Mis Videos</span></div>
+                <div class="sm-item" onclick="openWindow('folder-images', 'Mis Imágenes', 'https://win98icons.alexmeub.com/icons/png/directory_closed-4.png')"><span>Mis Imágenes</span></div>
+            </div>
+        </div>
+        <div class="sm-footer">
+            <div class="sm-footer-btn" onclick="location.reload()"><img src="https://win98icons.alexmeub.com/icons/png/shut_down_normal-0.png"> Reiniciar equipo</div>
+        </div>
+    </div>
+
+    <div id="volume-popup" class="hidden">
+        <img src="https://win98icons.alexmeub.com/icons/png/loudspeaker_rays-0.png" width="16" style="margin-bottom: 5px;">
+        <input type="range" id="vol-slider" min="0" max="100" value="100" orient="vertical">
+    </div>
+
+    <div id="taskbar">
+        <button class="start-btn" id="start-btn" onclick="toggleStartMenu(event)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.5));">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                <path d="M2 17l10 5 10-5"></path>
+                <path d="M2 12l10 5 10-5"></path>
+            </svg>
+            Inicio
+        </button>
+        
+        <div id="taskbar-windows"></div>
+
+        <div class="tray-area">
+            <img src="https://win98icons.alexmeub.com/icons/png/loudspeaker_rays-0.png" width="16" title="Volumen" style="cursor:pointer; image-rendering:pixelated;" onclick="toggleVolume(event)">
+            <span id="clock">10:30 AM</span>
         </div>
     </div>
 
     <script>
-        // 1. Quitar Preloader 
-        window.addEventListener('load', () => {
-            setTimeout(() => { document.getElementById('preloader').classList.add('loaded'); }, 1000); 
+        // --- 0. ARRANQUE AUTOMÁTICO (ABRIR VENTANAS ON LOAD) ---
+        window.onload = () => {
+            // Abrimos directamente las ventanas básicas para que la PC arranque viva y lista
+            setTimeout(() => {
+                openWindow('soundamp-player', 'SoundAmp', 'https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-3.png');
+                openWindow('folder-videos', 'Mis Videos', 'https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png');
+                openWindow('notepad-leeme', 'LEEME.txt', 'https://win98icons.alexmeub.com/icons/png/notepad_file-0.png');
+            }, 300);
+        };
+
+
+        // --- 1. LÓGICA DE VENTANAS Y BARRA DE TAREAS ---
+        let zIndexCounter = 100;
+        const activeWindows = {};
+
+        function openWindow(id, title, iconSrc) {
+            const win = document.getElementById(id);
+            win.classList.remove('hidden');
+            win.classList.remove('minimized');
+            
+            // Fix para Z-index
+            zIndexCounter++;
+            win.style.zIndex = zIndexCounter;
+
+            if (!activeWindows[id]) {
+                activeWindows[id] = true;
+                const tbContainer = document.getElementById('taskbar-windows');
+                const btn = document.createElement('div');
+                btn.className = 'taskbar-item active';
+                btn.id = 'taskbar-btn-' + id;
+                btn.innerHTML = `<img src="${iconSrc}"> <span>${title}</span>`;
+                btn.onclick = () => toggleWindow(id);
+                tbContainer.appendChild(btn);
+            }
+            updateTaskbar();
+        }
+
+        function closeWindow(id) {
+            const win = document.getElementById(id);
+            win.classList.add('hidden');
+            win.classList.remove('maximized');
+            
+            if (activeWindows[id]) {
+                delete activeWindows[id];
+                const btn = document.getElementById('taskbar-btn-' + id);
+                if (btn) btn.remove();
+            }
+
+            // DETENER AUDIO SI SE CIERRA EL REPRODUCTOR
+            if (id === 'soundamp-player') { scStop(); }
+        }
+
+        function minimizeWindow(id) {
+            document.getElementById(id).classList.add('minimized');
+            updateTaskbar();
+        }
+
+        function maximizeWindow(id) {
+            document.getElementById(id).classList.toggle('maximized');
+        }
+
+        function toggleWindow(id) {
+            const win = document.getElementById(id);
+            
+            if (win.classList.contains('minimized')) {
+                // Estaba minimizada, la restauramos y la traemos al frente
+                win.classList.remove('minimized');
+                zIndexCounter++;
+                win.style.zIndex = zIndexCounter;
+            } else {
+                // Si ya está visible, comprobamos si está en primer plano
+                const currentZ = parseInt(win.style.zIndex) || 0;
+                if (currentZ === zIndexCounter) {
+                    // Si es la que está más arriba, la minimizamos
+                    win.classList.add('minimized'); 
+                } else {
+                    // Si está por detrás de otra, la traemos al frente
+                    zIndexCounter++;
+                    win.style.zIndex = zIndexCounter; 
+                }
+            }
+            updateTaskbar();
+        }
+
+        function updateTaskbar() {
+            for (let id in activeWindows) {
+                const btn = document.getElementById('taskbar-btn-' + id);
+                const win = document.getElementById(id);
+                if (btn && win) {
+                    const isTop = (parseInt(win.style.zIndex) || 0) === zIndexCounter;
+                    if (!win.classList.contains('minimized') && isTop) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                }
+            }
+        }
+
+        function makeDraggable(element) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            const titlebar = element.querySelector('.os-titlebar');
+            if (titlebar) { titlebar.onmousedown = dragMouseDown; }
+
+            element.onmousedown = function() {
+                zIndexCounter++;
+                element.style.zIndex = zIndexCounter;
+                updateTaskbar();
+            };
+
+            function dragMouseDown(e) {
+                if(element.classList.contains('maximized')) return;
+                e = e || window.event; e.preventDefault();
+                pos3 = e.clientX; pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+            function elementDrag(e) {
+                e = e || window.event; e.preventDefault();
+                pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
+                pos3 = e.clientX; pos4 = e.clientY;
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+            }
+            function closeDragElement() { document.onmouseup = null; document.onmousemove = null; }
+        }
+
+        document.querySelectorAll('.window-container').forEach(win => { makeDraggable(win); });
+
+
+        // --- 2. MENÚ DE INICIO Y VOLUMEN ---
+        function toggleStartMenu(e) {
+            e.stopPropagation();
+            document.getElementById('start-menu').classList.toggle('active');
+            document.getElementById('start-btn').classList.toggle('active');
+            document.getElementById('volume-popup').classList.add('hidden');
+        }
+
+        function toggleVolume(e) {
+            e.stopPropagation();
+            document.getElementById('volume-popup').classList.toggle('hidden');
+            document.getElementById('start-menu').classList.remove('active');
+        }
+
+        document.addEventListener('click', (e) => {
+            const sm = document.getElementById('start-menu');
+            const btn = document.getElementById('start-btn');
+            const volPopup = document.getElementById('volume-popup');
+            
+            if (!sm.contains(e.target) && !btn.contains(e.target)) {
+                sm.classList.remove('active');
+                btn.classList.remove('active');
+            }
+            if (!volPopup.contains(e.target) && e.target.title !== "Volumen") {
+                volPopup.classList.add('hidden');
+            }
         });
 
-        // 2. Títulos Automáticos (API Noembed)
-        document.querySelectorAll('.video-card').forEach(async (card) => {
-            const videoId = card.getAttribute('data-id');
-            const titleElement = card.querySelector('.yt-title-fetch');
-            try {
-                const response = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
-                const data = await response.json();
-                if (data.title) {
-                    let cleanTitle = data.title.replace(/DeLasAguas/gi, '').replace(/-/g, '').trim();
-                    titleElement.innerText = cleanTitle || data.title;
-                } else { titleElement.innerText = "Archivo Visual"; }
-            } catch (error) { titleElement.innerText = "Archivo Visual"; }
-        });
 
-        // 3. Reproductor Alta Gama (SoundCloud API)
-        const widgetIframe = document.getElementById('sc-widget');
-        const widget = SC.Widget(widgetIframe);
-        
-        const playBtn = document.getElementById('main-play');
-        const timeCurrent = document.getElementById('time-current');
-        const timeTotal = document.getElementById('time-total');
-        const progressContainer = document.getElementById('progress-container');
-        const progressBar = document.getElementById('progress-bar');
-        
-        let isPlaying = false;
+        // --- 3. LÓGICA SOUNDAMP (SOUNDCLOUD) CON WAVEFORM ---
+        const widget = SC.Widget(document.getElementById('sc-widget'));
+        const timeDisplay = document.getElementById('soundamp-time');
+        const progressBar = document.getElementById('soundamp-progress-fill');
+        const visualizer = document.getElementById('visualizer');
         let trackDuration = 0;
 
         function formatTime(ms) {
             const totalSeconds = Math.floor(ms / 1000);
             const m = Math.floor(totalSeconds / 60);
             const s = totalSeconds % 60;
-            return `${m}:${s < 10 ? '0' : ''}${s}`;
+            return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
         }
 
         widget.bind(SC.Widget.Events.READY, () => {
-            widget.getDuration((duration) => {
-                trackDuration = duration;
-                timeTotal.innerText = formatTime(duration);
-            });
+            widget.getDuration((duration) => { trackDuration = duration; });
         });
 
-        playBtn.addEventListener('click', () => { widget.toggle(); });
-
-        widget.bind(SC.Widget.Events.PLAY, () => {
-            isPlaying = true;
-            playBtn.innerHTML = '||'; 
-            playBtn.style.paddingLeft = '0px'; 
-            playBtn.style.fontSize = '12px';
-            playBtn.style.letterSpacing = '-1px';
-        });
-
-        widget.bind(SC.Widget.Events.PAUSE, () => {
-            isPlaying = false;
-            playBtn.innerHTML = '▶';
-            playBtn.style.paddingLeft = '2px'; 
-            playBtn.style.fontSize = '14px';
-            playBtn.style.letterSpacing = '0px';
-        });
+        widget.bind(SC.Widget.Events.PLAY, () => { visualizer.classList.add('playing'); });
+        widget.bind(SC.Widget.Events.PAUSE, () => { visualizer.classList.remove('playing'); });
+        widget.bind(SC.Widget.Events.FINISH, () => { visualizer.classList.remove('playing'); });
 
         widget.bind(SC.Widget.Events.PLAY_PROGRESS, (data) => {
-            const currentMs = data.currentPosition;
-            timeCurrent.innerText = formatTime(currentMs);
-            const percent = (currentMs / trackDuration) * 100;
-            progressBar.style.width = `${percent}%`;
+            timeDisplay.innerText = formatTime(data.currentPosition);
+            if(trackDuration > 0) {
+                progressBar.style.width = `${(data.currentPosition / trackDuration) * 100}%`;
+            }
         });
 
-        progressContainer.addEventListener('click', (e) => {
+        function scPlay() { widget.play(); }
+        function scPause() { widget.pause(); }
+        function scStop() { widget.pause(); widget.seekTo(0); visualizer.classList.remove('playing');}
+        
+        function seekAudio(e) {
             if (trackDuration === 0) return;
-            const rect = progressContainer.getBoundingClientRect();
-            const percent = (e.clientX - rect.left) / rect.width;
-            widget.seekTo(percent * trackDuration);
-        });
-
-        // 4. Modal de Videos
-        const modal = document.getElementById('video-modal');
-        const modalIframe = document.getElementById('modal-iframe');
-        const closeModalBtn = document.getElementById('close-modal');
-
-        document.querySelectorAll('.video-card').forEach(item => {
-            item.addEventListener('click', function() {
-                const videoId = this.getAttribute('data-id');
-                if (isPlaying) { widget.pause(); } 
-                
-                modalIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
-                modal.classList.add('active');
-            });
-        });
-
-        function closeModal() {
-            modal.classList.remove('active');
-            setTimeout(() => { modalIframe.src = ""; }, 400); 
+            const rect = document.getElementById('soundamp-progress-bar').getBoundingClientRect();
+            widget.seekTo(((e.clientX - rect.left) / rect.width) * trackDuration);
         }
 
-        closeModalBtn.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        document.getElementById('vol-slider').addEventListener('input', function(e) {
+            widget.setVolume(e.target.value);
+        });
+
+
+        // --- 4. LÓGICA DE VISOR MULTIMEDIA ---
+        const mediaViewer = document.getElementById('media-viewer');
+        const mediaTitle = document.getElementById('media-title');
+        const viewerIframe = document.getElementById('viewer-iframe');
+        const viewerImage = document.getElementById('viewer-image');
+
+        function openMedia(type, src, title) {
+            scPause(); // Pausar música si vemos un video/foto
+
+            if (type === 'video') {
+                mediaTitle.innerHTML = `<img src="https://win98icons.alexmeub.com/icons/png/video_file-0.png"> Reproductor Multimedia - ${title}`;
+                viewerImage.style.display = 'none';
+                viewerIframe.style.display = 'block';
+                viewerIframe.src = `https://www.youtube.com/embed/${src}?autoplay=1&rel=0`;
+            } else {
+                mediaTitle.innerHTML = `<img src="https://win98icons.alexmeub.com/icons/png/image_file-0.png"> Visor de Imágenes - ${title}`;
+                viewerIframe.style.display = 'none';
+                viewerIframe.src = "";
+                viewerImage.style.display = 'block';
+                viewerImage.src = src;
+            }
+            openWindow('media-viewer', title, type === 'video' ? 'https://win98icons.alexmeub.com/icons/png/video_file-0.png' : 'https://win98icons.alexmeub.com/icons/png/image_file-0.png');
+        }
+
+        function closeViewer() {
+            closeWindow('media-viewer');
+            setTimeout(() => { viewerIframe.src = ""; viewerImage.src = ""; }, 300);
+        }
+
+        // --- 5. RELOJ ---
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12; hours = hours ? hours : 12; 
+            document.getElementById('clock').innerText = `${hours}:${minutes} ${ampm}`;
+        }
+        setInterval(updateClock, 1000); updateClock();
+
     </script>
 </body>
 </html>
