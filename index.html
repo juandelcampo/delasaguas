@@ -7,189 +7,274 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400&display=swap" rel="stylesheet">
 
     <style>
-        /* Reset y estilos base */
+        /* --- ESTILOS BASE (VISTA ÚNICA) --- */
         * { box-sizing: border-box; }
+        
         body, html {
-            margin: 0;
-            padding: 0;
-            background-color: #000000;
-            color: #ffffff;
+            margin: 0; padding: 0;
+            width: 100vw; height: 100vh; /* Obliga a ocupar exactamente 1 pantalla */
+            background-color: #050505; color: #ffffff;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
+            overflow: hidden; /* PROHÍBE EL SCROLL */
         }
 
-        /* --- FONDO DE VIDEO FIJO --- */
-        #video-fondo {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -2; /* Se queda al fondo de todo */
-            overflow: hidden;
+        /* --- PRELOADER --- */
+        #preloader {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
             background-color: #000;
+            z-index: 5000;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        #preloader h1 {
+            font-family: 'Montserrat', sans-serif; font-weight: 100;
+            font-size: 4vw; letter-spacing: 10px; 
+            margin-bottom: 30px;
+            animation: fadeIn 1.5s ease-in-out forwards;
+        }
+
+        .spinner {
+            width: 50px; height: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; 
+        }
+
+        #preloader.loaded { opacity: 0; visibility: hidden; }
+
+        @keyframes fadeIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- FONDO DE VIDEO --- */
+        #video-fondo {
+            position: absolute; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: -2; overflow: hidden;
+            background-color: #050505;
         }
 
         #video-fondo iframe {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100vw;
-            height: 56.25vw;
-            min-height: 100vh;
-            min-width: 177.77vh;
+            position: absolute; top: 50%; left: 50%;
+            width: 100vw; height: 56.25vw; /* Ratio 16:9 */
+            min-height: 100vh; min-width: 177.77vh;
             transform: translate(-50%, -50%);
-            border: none;
-            pointer-events: none; /* Nadie puede clickear el video */
+            border: none; pointer-events: none; 
+            filter: grayscale(80%) blur(2px);
+            opacity: 0.5; /* Más visible */
         }
 
-        /* Capa oscura sobre el video para que el contenido se lea perfecto */
         .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
+            z-index: -1; pointer-events: none;
+        }
+
+        /* --- LAYOUT PRINCIPAL (DASHBOARD) --- */
+        .dashboard {
+            position: relative; z-index: 10;
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: space-between; /* Distribuye arriba, medio y abajo */
+            padding: 4vh 4vw;
+        }
+
+        /* 1. HEADER Y TEXTO */
+        .header-container {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            gap: 40px;
+            animation: fadeIn 2s ease forwards;
+        }
+
+        .titulo {
+            font-family: 'Montserrat', sans-serif; font-weight: 100;
+            font-size: clamp(3rem, 5vw, 6rem); /* Se adapta al tamaño de pantalla */
+            letter-spacing: 2px; margin: 0;
+            line-height: 1;
+            text-shadow: 0 5px 20px rgba(0,0,0,0.9);
+        }
+
+        .manifiesto {
+            max-width: 500px;
+            font-family: 'Montserrat', sans-serif; font-weight: 300;
+            font-size: clamp(0.85rem, 1vw, 1rem);
+            line-height: 1.6;
+            color: #d0d0d0;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            text-align: right;
+        }
+
+        /* 2. GRILLA DE VIDEOS (Tira horizontal) */
+        .filmstrip {
+            display: grid; 
+            grid-template-columns: repeat(6, 1fr); /* 6 videos en una sola línea */
+            gap: 1.5vw;
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.65); /* Ajusta el 0.65 para más o menos oscuridad */
-            z-index: -1;
-            pointer-events: none;
         }
 
-        /* --- CABECERA (Título arriba a la izquierda) --- */
-        header {
-            position: fixed;
-            top: 30px;
-            left: 40px;
-            z-index: 100;
+        .video-card {
+            display: flex; flex-direction: column; gap: 8px;
         }
 
-        header h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 200; /* Letra muy fina */
-            font-size: 2.2rem;
-            letter-spacing: 1px;
-            margin: 0;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        .thumbnail {
+            position: relative; padding-bottom: 56.25%; height: 0;
+            background-color: #111; border-radius: 6px; overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+            cursor: pointer; 
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s ease, border-color 0.3s ease;
         }
 
-        /* --- CONTENIDO PRINCIPAL SCROLLABLE --- */
-        .contenido {
-            position: relative;
-            z-index: 10;
-            max-width: 1400px;
-            margin: 0 auto;
-            /* El padding-top da espacio para que no choque con el título fijo */
-            padding: 120px 5% 80px 5%; 
-        }
-
-        /* --- SECCIÓN AUDIO (Más chica) --- */
-        .seccion-audio {
-            max-width: 800px;
-            margin: 0 auto 80px auto; /* Centrado y con espacio abajo */
-            border-radius: 4px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        /* --- SECCIÓN VIDEOS --- */
-        .grilla-videos {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-        }
-
-        .video-item {
-            position: relative;
-            padding-bottom: 56.25%; /* Proporción 16:9 */
-            height: 0;
-            background-color: #050505;
-            border-radius: 6px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .video-item iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .video-item:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+        .thumbnail:hover {
+            transform: translateY(-5px) scale(1.05);
+            border-color: rgba(255,255,255,0.3);
             z-index: 2;
         }
 
-        /* --- RESPONSIVIDAD --- */
-        @media (max-width: 1024px) {
-            .grilla-videos { grid-template-columns: repeat(2, 1fr); }
+        .thumbnail img {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(50%); transition: filter 0.3s ease;
         }
-        @media (max-width: 600px) {
-            header { top: 20px; left: 20px; }
-            header h1 { font-size: 1.8rem; }
-            .contenido { padding-top: 100px; }
-            .grilla-videos { grid-template-columns: 1fr; }
+        .thumbnail:hover img { filter: grayscale(0%); }
+
+        .video-titulo {
+            font-family: 'Montserrat', sans-serif; font-weight: 300;
+            font-size: 0.8rem; color: #aaaaaa; text-align: center;
         }
+
+        /* 3. SOUNDCLOUD (Con botón de Play grande) */
+        .audio-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 8px; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* --- MODAL DE VIDEO --- */
+        #video-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px);
+            z-index: 9999; display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+
+        #video-modal.active { opacity: 1; pointer-events: auto; }
+
+        .modal-content {
+            position: relative; width: 90%; max-width: 1100px;
+            aspect-ratio: 16 / 9; background: #000; border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+        }
+
+        .modal-content iframe { width: 100%; height: 100%; border: none; border-radius: 8px; }
+
+        .close-btn {
+            position: absolute; top: -40px; right: 0;
+            color: #ffffff; font-size: 35px; cursor: pointer; opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+        .close-btn:hover { opacity: 1; }
+
     </style>
 </head>
 <body>
 
+    <div id="preloader">
+        <h1>DeLasAguas</h1>
+        <div class="spinner"></div>
+    </div>
+
+    <div id="video-modal">
+        <div class="modal-content">
+            <div class="close-btn" id="close-modal">&times;</div>
+            <iframe id="modal-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+    </div>
+
     <div id="video-fondo">
-        <iframe 
-            src="https://www.youtube.com/embed/8hLqNGp78b8?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=8hLqNGp78b8" 
-            allow="autoplay; encrypted-media" 
-            allowfullscreen>
-        </iframe>
+        <iframe src="https://www.youtube.com/embed/8hLqNGp78b8?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=8hLqNGp78b8&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
     <div class="overlay"></div>
 
-    <header>
-        <h1>DeLasAguas</h1>
-    </header>
-
-    <div class="contenido">
+    <main class="dashboard">
         
-        <div class="seccion-audio">
-            <iframe 
-                width="100%" 
-                height="166" 
-                scrolling="no" 
-                frameborder="no" 
-                allow="autoplay" 
-                src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/juan-manuel-309/delasaguas-jam-08-2010&color=%23000000&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false">
-            </iframe>
-        </div>
-
-        <div class="grilla-videos">
-            <div class="video-item">
-                <iframe src="https://www.youtube.com/embed/KVc3yQr89to" allowfullscreen></iframe>
-            </div>
-            <div class="video-item">
-                <iframe src="https://www.youtube.com/embed/qiNnFuErDOw" allowfullscreen></iframe>
-            </div>
-            <div class="video-item">
-                <iframe src="https://www.youtube.com/embed/hwLEuHiV1kE" allowfullscreen></iframe>
-            </div>
-            <div class="video-item">
-                <iframe src="https://www.youtube.com/embed/VkqwETnA510" allowfullscreen></iframe>
-            </div>
-            <div class="video-item">
-                <iframe src="https://www.youtube.com/embed/bTNAxV6jn2Y" allowfullscreen></iframe>
-            </div>
-            <div class="video-item">
-                <iframe src="https://www.youtube.com/embed/MEvLUSr2e9Y" allowfullscreen></iframe>
+        <div class="header-container">
+            <h1 class="titulo">DeLasAguas</h1>
+            <div class="manifiesto">
+                DeLasAguas fue un colectivo de música y videoarte que fusionó bossa nova, funk, psicodelia y stoner con proyecciones abstractas en tiempo real. Sus presentaciones en vivo eran viajes viscerales e ininterrumpidos que exigían inmersión total. Su legado culmina en "Los sueños de Pellicciaro", un proyecto independiente donde el sonido y la obra gráfica convergen en una sola experiencia.
             </div>
         </div>
 
-    </div>
+        <div class="filmstrip">
+            <div class="video-card">
+                <div class="thumbnail" data-id="KVc3yQr89to"><img src="https://img.youtube.com/vi/KVc3yQr89to/hqdefault.jpg" alt="Video"></div>
+                <div class="video-titulo">Video 1</div>
+            </div>
+            <div class="video-card">
+                <div class="thumbnail" data-id="qiNnFuErDOw"><img src="https://img.youtube.com/vi/qiNnFuErDOw/hqdefault.jpg" alt="Video"></div>
+                <div class="video-titulo">Video 2</div>
+            </div>
+            <div class="video-card">
+                <div class="thumbnail" data-id="hwLEuHiV1kE"><img src="https://img.youtube.com/vi/hwLEuHiV1kE/hqdefault.jpg" alt="Video"></div>
+                <div class="video-titulo">Video 3</div>
+            </div>
+            <div class="video-card">
+                <div class="thumbnail" data-id="VkqwETnA510"><img src="https://img.youtube.com/vi/VkqwETnA510/hqdefault.jpg" alt="Video"></div>
+                <div class="video-titulo">Video 4</div>
+            </div>
+            <div class="video-card">
+                <div class="thumbnail" data-id="bTNAxV6jn2Y"><img src="https://img.youtube.com/vi/bTNAxV6jn2Y/hqdefault.jpg" alt="Video"></div>
+                <div class="video-titulo">Video 5</div>
+            </div>
+            <div class="video-card">
+                <div class="thumbnail" data-id="MEvLUSr2e9Y"><img src="https://img.youtube.com/vi/MEvLUSr2e9Y/hqdefault.jpg" alt="Video"></div>
+                <div class="video-titulo">Video 6</div>
+            </div>
+        </div>
 
+        <div class="audio-container">
+            <iframe width="100%" height="150" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/juan-manuel-309/delasaguas-jam-08-2010&visual=true&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false"></iframe>
+        </div>
+
+    </main>
+
+    <script>
+        // 1. Quitar Preloader
+        window.addEventListener('load', () => {
+            setTimeout(() => { document.getElementById('preloader').classList.add('loaded'); }, 1000); 
+        });
+        setTimeout(() => { document.getElementById('preloader').classList.add('loaded'); }, 4000);
+
+        // 2. Lógica del Modal de Video
+        const modal = document.getElementById('video-modal');
+        const modalIframe = document.getElementById('modal-iframe');
+        const closeModalBtn = document.getElementById('close-modal');
+
+        document.querySelectorAll('.thumbnail').forEach(item => {
+            item.addEventListener('click', function() {
+                const videoId = this.getAttribute('data-id');
+                modalIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+                modal.classList.add('active');
+            });
+        });
+
+        function closeModal() {
+            modal.classList.remove('active');
+            setTimeout(() => { modalIframe.src = ""; }, 300);
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    </script>
 </body>
 </html>
