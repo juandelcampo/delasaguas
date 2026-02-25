@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeLasAguas</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet">
+
+    <style>
+        /* Reset y estilos base */
+        * { box-sizing: border-box; }
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- FONDO DE VIDEO FIJO --- */
+        #video-fondo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2; /* Se queda al fondo de todo */
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        #video-fondo iframe {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100vw;
+            height: 56.25vw;
+            min-height: 100vh;
+            min-width: 177.77vh;
+            transform: translate(-50%, -50%);
+            border: none;
+            pointer-events: none; /* Nadie puede clickear el video */
+        }
+
+        /* Capa oscura sobre el video para que el contenido se lea perfecto */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65); /* Ajusta el 0.65 para más o menos oscuridad */
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- CABECERA (Título arriba a la izquierda) --- */
+        header {
+            position: fixed;
+            top: 30px;
+            left: 40px;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 200; /* Letra muy fina */
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+            margin: 0;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        /* --- CONTENIDO PRINCIPAL SCROLLABLE --- */
+        .contenido {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+            /* El padding-top da espacio para que no choque con el título fijo */
+            padding: 120px 5% 80px 5%; 
+        }
+
+        /* --- SECCIÓN AUDIO (Más chica) --- */
+        .seccion-audio {
+            max-width: 800px;
+            margin: 0 auto 80px auto; /* Centrado y con espacio abajo */
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* --- SECCIÓN VIDEOS --- */
+        .grilla-videos {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .video-item {
+            position: relative;
+            padding-bottom: 56.25%; /* Proporción 16:9 */
+            height: 0;
+            background-color: #050505;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .video-item iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+            z-index: 2;
+        }
+
+        /* --- RESPONSIVIDAD --- */
+        @media (max-width: 1024px) {
+            .grilla-videos { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            header { top: 20px; left: 20px; }
+            header h1 { font-size: 1.8rem; }
+            .contenido { padding-top: 100px; }
+            .grilla-videos { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="video-fondo">
+        <iframe 
+            src="https://www.youtube.com/embed/8hLqNGp78b8?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=8hLqNGp78b8" 
+            allow="autoplay; encrypted-media" 
+            allowfullscreen>
+        </iframe>
+    </div>
+    <div class="overlay"></div>
+
+    <header>
+        <h1>DeLasAguas</h1>
+    </header>
+
+    <div class="contenido">
+        
+        <div class="seccion-audio">
+            <iframe 
+                width="100%" 
+                height="166" 
+                scrolling="no" 
+                frameborder="no" 
+                allow="autoplay" 
+                src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/juan-manuel-309/delasaguas-jam-08-2010&color=%23000000&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false">
+            </iframe>
+        </div>
+
+        <div class="grilla-videos">
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/KVc3yQr89to" allowfullscreen></iframe>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/qiNnFuErDOw" allowfullscreen></iframe>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/hwLEuHiV1kE" allowfullscreen></iframe>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/VkqwETnA510" allowfullscreen></iframe>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/bTNAxV6jn2Y" allowfullscreen></iframe>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/MEvLUSr2e9Y" allowfullscreen></iframe>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
