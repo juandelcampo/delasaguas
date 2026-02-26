@@ -13,76 +13,85 @@
         
         body, html {
             width: 100vw; height: 100vh; 
-            background: url('https://static.boredpanda.com/blog/wp-content/uploads/2017/06/DSC00330-Edit-59391339deded__880.jpg') no-repeat center center fixed;
+            background-color: #008080;
+            background-image: url('https://static.boredpanda.com/blog/wp-content/uploads/2017/06/DSC00330-Edit-59391339deded__880.jpg');
+            background-repeat: no-repeat;
             background-size: cover;
+            background-position: center;
             font-family: Tahoma, "Trebuchet MS", sans-serif;
             overflow: hidden; 
             font-size: 12px; 
         }
 
-        /* WIDGET SOUNDCLOUD (Físicamente en el DOM para evitar bloqueos) */
+        /* --- PANTALLA DE LOGIN --- */
+        #login-screen {
+            position: fixed; inset: 0; background: #003399; z-index: 999999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: white; transition: opacity 0.5s ease; cursor: wait;
+        }
+        .login-box {
+            display: flex; align-items: center; gap: 20px; background: rgba(0,0,0,0.2);
+            padding: 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .login-box img { width: 70px; height: 70px; border-radius: 5px; border: 2px solid #fff; image-rendering: pixelated;}
+        .login-text h1 { font-size: 24px; margin-bottom: 5px; font-weight: normal; font-style: italic;}
+        .login-text p { font-size: 14px; color: #ccc; }
+
+        /* WIDGET SOUNDCLOUD */
         #sc-widget-container { position: absolute; width: 1px; height: 1px; top: 0; left: 0; opacity: 0; pointer-events: none; z-index: -100; }
 
         /* --- ESCRITORIO E ICONOS --- */
-        #desktop-area {
-            height: calc(100vh - 38px); 
-            width: 100vw; padding: 20px; display: flex; flex-direction: column; flex-wrap: wrap; 
-            gap: 25px; align-content: flex-start; position: relative; z-index: 1;
-        }
+        #desktop-area { height: calc(100vh - 38px); width: 100vw; position: relative; z-index: 1; }
 
         .desktop-icon {
-            width: 80px; display: flex; flex-direction: column; align-items: center;
-            text-align: center; color: white; cursor: pointer;
-            text-shadow: 1px 1px 2px #000; gap: 5px; margin-bottom: 10px;
+            width: 90px; display: flex; flex-direction: column; align-items: center;
+            text-align: center; color: white; cursor: pointer; position: absolute;
+            text-shadow: 1px 1px 2px #000; gap: 5px; 
         }
-        .desktop-icon img { width: 42px; height: 42px; filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.5)); image-rendering: pixelated;}
-        .desktop-icon span { padding: 2px 4px; border-radius: 2px; line-height: 1.2; }
+        .desktop-icon img { width: 46px; height: 46px; filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.5)); image-rendering: pixelated; pointer-events: none;}
+        .desktop-icon span { padding: 2px 5px; border-radius: 2px; line-height: 1.2; font-size: 11px; pointer-events: none;}
         .desktop-icon:active span { background: #0b61ff; }
         .desktop-icon:active img { filter: brightness(0.5) sepia(1) hue-rotate(200deg) saturate(5); }
 
-        /* --- SISTEMA DE VENTANAS (TEMA ESTILIZADO MIDNIGHT) --- */
-        .window-container {
-            position: absolute; background-color: #f4f4f4;
-            border: 1px solid #111; border-radius: 6px 6px 0 0;
-            box-shadow: 4px 4px 15px rgba(0,0,0,0.6);
-            display: flex; flex-direction: column; overflow: hidden;
-            resize: both; min-width: 350px; min-height: 250px;
+        /* --- MENUS CLIC DERECHO --- */
+        .context-menu {
+            position: absolute; background: #ece9d8; border: 1px solid #fff; border-right-color: #999; border-bottom-color: #999;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5); padding: 2px; z-index: 30000; display: none; flex-direction: column;
+        }
+        .ctx-item { padding: 6px 15px; cursor: pointer; color: #000; font-size: 11px; }
+        .ctx-item:hover { background: #0b61ff; color: #fff; }
+        .ctx-divider { height: 1px; background: #999; border-bottom: 1px solid #fff; margin: 2px 4px; }
+
+        /* --- SALVAPANTALLAS --- */
+        #screensaver {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 50000; display: none; overflow: hidden;
+        }
+        #ss-text { 
+            position: absolute; font-size: 65px; font-weight: bold; 
+            font-family: 'Comic Sans MS', 'Comic Sans', cursive; 
+            color: #00ff00; white-space: nowrap; 
+            text-shadow: 4px 4px 0px #ff00ff, -3px -3px 0px #00ffff;
         }
 
+        /* --- SISTEMA DE VENTANAS --- */
+        .window-container {
+            position: absolute; background-color: #f4f4f4; border: 1px solid #111; border-radius: 6px 6px 0 0;
+            box-shadow: 4px 4px 15px rgba(0,0,0,0.6); display: flex; flex-direction: column; overflow: hidden; resize: both; min-width: 350px; min-height: 250px;
+        }
         .window-container.hidden { display: none !important; }
         .window-container.minimized { display: none !important; }
-        .window-container.maximized {
-            top: 0 !important; left: 0 !important;
-            width: 100vw !important; height: calc(100vh - 38px) !important;
-            border-radius: 0; resize: none;
-        }
+        .window-container.maximized { top: 0 !important; left: 0 !important; width: 100vw !important; height: calc(100vh - 38px) !important; border-radius: 0; resize: none; }
 
-        /* Barra de Título */
-        .os-titlebar {
-            background: linear-gradient(to bottom, #4a4a4a 0%, #2b2b2b 100%);
-            padding: 4px 8px; height: 30px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid #000; cursor: default;
-        }
+        .os-titlebar { background: linear-gradient(to bottom, #4a4a4a 0%, #2b2b2b 100%); padding: 4px 8px; height: 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #000; cursor: default; }
         .os-title { color: #eee; font-weight: bold; text-shadow: 1px 1px #000; display: flex; align-items: center; gap: 6px; font-size: 12px;}
         .os-title img { width: 16px; height: 16px; image-rendering: pixelated; }
-        
         .os-controls { display: flex; gap: 3px; }
-        .os-btn {
-            width: 22px; height: 22px; border-radius: 3px; border: 1px solid #666;
-            color: white; font-weight: bold; font-family: Arial; font-size: 12px;
-            display: flex; justify-content: center; align-items: center; cursor: pointer;
-            box-shadow: inset 0 -1px 2px rgba(0,0,0,0.5); text-shadow: 1px 1px 1px rgba(0,0,0,0.8);
-        }
+        .os-btn { width: 22px; height: 22px; border-radius: 3px; border: 1px solid #666; color: white; font-weight: bold; font-family: Arial; font-size: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: inset 0 -1px 2px rgba(0,0,0,0.5); }
         .os-btn-blue { background: linear-gradient(to bottom, #666, #333); }
-        .os-btn-blue:active { background: #222; box-shadow: inset 0 2px 3px rgba(0,0,0,0.8); }
         .os-btn-close { background: linear-gradient(to bottom, #c9402a, #8f1b0a); border-color: #e26f5d; }
-        .os-btn-close:active { background: #661004; box-shadow: inset 0 2px 3px rgba(0,0,0,0.8); }
 
-        /* Cuerpos de Ventana */
         .os-explorer-body { display: flex; flex: 1; min-height: 0; border-top: 1px solid #666; background: #fff;}
-        
-        /* SIDEBAR DE CARPETAS */
         .os-sidebar-panel { width: 190px; background: linear-gradient(to bottom, #2b2b36, #1a1a24); padding: 15px; border-right: 1px solid #999; color: white; overflow-y: auto; }
         .os-sidebar-box { background: #ece9d8; border-radius: 3px; overflow: hidden; box-shadow: 1px 1px 3px rgba(0,0,0,0.5); margin-bottom: 15px; }
         .os-box-header { background: linear-gradient(to right, #ccc, #aaa); color: #000; font-weight: bold; padding: 5px 10px; font-size: 11px; border-bottom: 1px solid #999;}
@@ -91,70 +100,49 @@
         .sidebar-link:hover { color: #0077ff; text-decoration: underline; }
         .sidebar-link img { width: 14px; height: 14px; image-rendering: pixelated;}
 
-        .os-main-content { flex: 1; padding: 20px; overflow-y: auto; background: #fdfdfd; }
-        
-        /* Bloc de Notas */
+        .os-main-content { flex: 1; padding: 25px; overflow-y: auto; background: #fdfdfd; }
         .notepad-body { flex: 1; display: flex; flex-direction: column; background: #fff; min-height: 0;}
         .notepad-menubar { background: #d0d0d0; padding: 4px 8px; border-bottom: 1px solid #999; display: flex; gap: 15px; font-size: 12px; }
         .notepad-textarea { flex: 1; border: none; resize: none; padding: 10px; font-family: 'Courier New', monospace; font-size: 14px; overflow-y: auto; outline: none; }
 
-        /* --- VISOR MULTIMEDIA UNIFICADO --- */
+        /* VISOR MULTIMEDIA */
         .media-viewer-body { flex: 1; display: flex; flex-direction: column; background: #111; min-height: 0; }
         .media-content-area { flex: 1; display: flex; justify-content: center; align-items: center; padding: 0; min-height: 0; background: #000; position: relative;}
         .media-content-area iframe, .media-content-area img { width: 100%; height: 100%; object-fit: contain; border: none; display: none; }
-        
-        /* Controles de Navegación de Imágenes */
-        .media-viewer-toolbar {
-            height: 45px; background: #ece9d8; border-top: 1px solid #fff;
-            display: none; justify-content: center; align-items: center; gap: 20px;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); width: 100%; flex-shrink: 0;
-        }
+        .media-viewer-toolbar { height: 45px; background: #ece9d8; border-top: 1px solid #fff; display: none; justify-content: center; align-items: center; gap: 20px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); width: 100%; flex-shrink: 0; }
         .media-viewer-toolbar.active { display: flex; }
-        .toolbar-btn {
-            width: 30px; height: 30px; border-radius: 50%; border: 1px solid #999;
-            background: linear-gradient(to bottom, #fff, #ddd); font-size: 14px; cursor: pointer;
-            display: flex; justify-content: center; align-items: center; color: #333;
-            box-shadow: 1px 1px 3px rgba(0,0,0,0.3); transition: 0.1s;
-        }
+        .toolbar-btn { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #999; background: linear-gradient(to bottom, #fff, #ddd); font-size: 14px; cursor: pointer; display: flex; justify-content: center; align-items: center; color: #333; box-shadow: 1px 1px 3px rgba(0,0,0,0.3); transition: 0.1s; }
         .toolbar-btn:active { background: #ccc; box-shadow: inset 1px 1px 3px rgba(0,0,0,0.5); transform: translateY(1px);}
 
-        /* ICONOS DE ARCHIVO AÚN MÁS GRANDES */
+        /* ICONOS DE ARCHIVO AMPLIADOS */
         .grid-files { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; align-items: start; }
         .file-item { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; padding: 10px; border: 1px dotted transparent; border-radius: 4px; height: max-content;}
         .file-item:hover { background-color: #dbeaff; border-color: #9ac6ff; }
         .file-item img.file-thumb { width: 140px; height: 105px; object-fit: cover; border: 1px solid #ccc; padding: 2px; background: #fff; box-shadow: 2px 2px 5px rgba(0,0,0,0.3); }
-        .file-item img.file-icon-img { width: 50px; height: 50px; image-rendering: pixelated; }
+        .file-item img.file-icon-img { width: 48px; height: 48px; image-rendering: pixelated; }
         .file-item span { margin-top: 10px; font-size: 12px; word-break: break-word; color: #000; line-height: 1.2;}
 
-        /* ========================================================
-           CLON DE WINAMP (MUCHO MÁS GRANDE, ESCALABLE Y CON BARRA)
-           ======================================================== */
-        .winamp-window {
-            background: #272832; border: 2px solid; border-color: #6d6d7c #000 #000 #6d6d7c;
-            width: 420px; min-width: 380px; height: 320px; min-height: 280px;
-            border-radius: 0; resize: both; box-shadow: 6px 6px 15px rgba(0,0,0,0.8);
-            padding: 4px; display: flex; flex-direction: column; gap: 6px; overflow: hidden;
-        }
-        
-        .wa-module { background: #2a2a35; padding: 12px; border: 1px solid #000; box-shadow: inset 1px 1px 1px #444; flex-shrink: 0;}
+        /* --- APP: PAINT RETRO MEJORADO --- */
+        .paint-toolbar { background: #ece9d8; padding: 8px 10px; display: flex; flex-direction: column; gap: 8px; border-bottom: 2px solid #999; }
+        .paint-row { display: flex; gap: 10px; align-items: center; font-size: 11px; }
+        .color-btn { width: 20px; height: 20px; border: 2px outset #eee; cursor: pointer; border-radius: 0; box-sizing: border-box;}
+        .color-btn.active { border: 2px inset #999; outline: 1px dotted #000; }
+        .paint-action-btn { background: #ece9d8; border: 2px outset #eee; font-family: Tahoma; font-size: 11px; cursor: pointer; padding: 2px 8px; }
+        .paint-action-btn:active { border: 2px inset #eee; }
 
-        /* Titulo Winamp */
-        .wa-titlebar {
-            background: linear-gradient(to right, #1d1d29, #333346, #1d1d29); height: 20px;
-            display: flex; justify-content: space-between; align-items: center; padding: 0 6px;
-            border: 1px solid #000; cursor: default; margin-bottom: 2px; flex-shrink: 0;
-        }
+        /* ========================================================
+           CLON DE WINAMP
+           ======================================================== */
+        .winamp-window { background: #272832; border: 2px solid; border-color: #6d6d7c #000 #000 #6d6d7c; width: 420px; min-width: 380px; height: 320px; min-height: 280px; border-radius: 0; resize: both; box-shadow: 6px 6px 15px rgba(0,0,0,0.8); padding: 4px; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+        .wa-module { background: #2a2a35; padding: 12px; border: 1px solid #000; box-shadow: inset 1px 1px 1px #444; flex-shrink: 0;}
+        .wa-titlebar { background: linear-gradient(to right, #1d1d29, #333346, #1d1d29); height: 20px; display: flex; justify-content: space-between; align-items: center; padding: 0 6px; border: 1px solid #000; cursor: default; margin-bottom: 2px; flex-shrink: 0;}
         .wa-title { font-family: Tahoma, sans-serif; font-size: 11px; color: #d3d3d3; font-weight: bold; letter-spacing: 2px; margin-left: 5px;}
         .wa-controls { display: flex; gap: 4px; }
         .wa-btn-close { width: 14px; height: 14px; background: #bbaaaa; border: 1px solid; border-color: #fff #555 #555 #fff; font-size: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #000; font-weight: bold; }
-        .wa-btn-close:active { border-color: #555 #fff #fff #555; padding-top: 1px; padding-left: 1px; }
-
-        /* Pantalla Principal */
+        
         .wa-screen-container { background: #000; border: 2px inset #666; height: 75px; padding: 8px 12px; display: flex; gap: 15px; align-items: center; margin-bottom: 10px; }
         .wa-left-screen { display: flex; flex-direction: column; align-items: center; gap: 6px; }
         .wa-time { font-family: 'Courier New', monospace; font-size: 32px; color: #00ff00; font-weight: bold; line-height: 1; text-shadow: 0 0 5px #00ff00; letter-spacing: -1px;}
-        
-        /* Waveform Animator */
         .wa-visualizer { display: flex; align-items: flex-end; gap: 2px; height: 16px; width: 100%; border-bottom: 2px solid #003300; }
         .vis-bar { width: 8px; background: #00ff00; height: 3px; transition: height 0.1s; }
         .wa-visualizer.playing .vis-bar { animation: eq 0.4s infinite alternate ease-in-out; }
@@ -170,144 +158,168 @@
         .wa-title-scroll { font-family: 'Courier New', monospace; font-size: 14px; color: #00ff00; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: #002200; padding: 4px; border: 1px solid #004400; margin-bottom: 4px;}
         .wa-stats { font-family: 'Courier New', monospace; font-size: 12px; color: #00aa00; display: flex; gap: 12px;}
 
-        /* LÍNEA DE TIEMPO Y SLIDER DE PROGRESO REAL */
         .wa-slider-area { margin-bottom: 10px; padding: 0 5px; flex-shrink: 0;}
         .wa-timeline-text { display: flex; justify-content: space-between; font-family: 'Courier New', monospace; font-size: 12px; font-weight: bold; color: #00aa00; margin-bottom: 4px; }
-        
-        .wa-seek-slider {
-            -webkit-appearance: none; appearance: none;
-            width: 100%; height: 14px; background: #050505; margin: 0;
-            border: 2px inset #555; cursor: pointer; outline: none;
-        }
-        .wa-seek-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; appearance: none;
-            width: 30px; height: 16px; background: #C0C0C0;
-            border: 2px solid; border-color: #fff #555 #555 #fff; cursor: pointer;
-        }
+        .wa-seek-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: #050505; margin: 0; border: 2px inset #555; cursor: pointer; outline: none; }
+        .wa-seek-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 30px; height: 16px; background: #C0C0C0; border: 2px solid; border-color: #fff #555 #555 #fff; cursor: pointer; }
 
-        /* Controles Inferiores */
         .wa-controls-area { display: flex; align-items: center; justify-content: space-between; padding-left: 5px; flex-shrink: 0;}
         .wa-buttons { display: flex; gap: 6px; }
         .wa-btn { background: linear-gradient(to bottom, #d6d3ce, #999); border: 2px solid; border-color: #fff #555 #555 #fff; height: 30px; width: 38px; font-size: 14px; font-weight: bold; cursor: pointer; color: #000; display: flex; justify-content: center; align-items: center; font-family: Arial; }
         .wa-btn:active { border-color: #555 #fff #fff #555; padding-top: 2px; padding-left: 2px; background: #a9a9a9;}
         .wa-btn.play { width: 45px; font-size: 18px; }
 
-        /* Fader Volumen Winamp */
         .wa-volume-box { display: flex; align-items: center; gap: 6px; color: #00aa00; font-family: 'Courier New', monospace; font-size: 13px; font-weight: bold;}
-        .wa-vol-slider {
-            -webkit-appearance: none; appearance: none; width: 90px; height: 12px; background: #000; margin: 0; border: 2px inset #555; cursor: pointer;
-        }
-        .wa-vol-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; appearance: none; width: 12px; height: 18px; background: #C0C0C0; border: 2px solid; border-color: #fff #555 #555 #fff; cursor: pointer;
-        }
+        .wa-vol-slider { -webkit-appearance: none; appearance: none; width: 90px; height: 12px; background: #000; margin: 0; border: 2px inset #555; cursor: pointer; }
+        .wa-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 12px; height: 18px; background: #C0C0C0; border: 2px solid; border-color: #fff #555 #555 #fff; cursor: pointer; }
 
-        /* Playlist Módulo (Crece al agrandar la ventana) */
         .wa-playlist-module { background: #000; border: 2px inset #555; padding: 6px; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 70px;}
         .wa-pl-item { font-family: 'Courier New', monospace; font-size: 13px; color: #00aa00; padding: 4px 6px; display: flex; justify-content: space-between; cursor: pointer;}
+        .wa-pl-item:hover { background: #111; }
         .wa-pl-item.active { background: #002200; color: #00ff00; }
 
         /* ======================================================== */
 
         /* --- BARRA DE TAREAS --- */
-        #taskbar {
-            position: fixed; bottom: 0; left: 0; width: 100vw; height: 38px;
-            background: linear-gradient(to bottom, #303030, #111);
-            display: flex; align-items: center; z-index: 10000; border-top: 2px solid #555;
-        }
-        
-        .start-btn {
-            background: linear-gradient(to bottom, #0078D7, #00427a);
-            color: white; font-weight: bold; font-size: 15px; font-style: italic;
-            height: 100%; padding: 0 20px 0 15px; border: none; border-radius: 0 15px 15px 0;
-            display: flex; align-items: center; gap: 8px; box-shadow: inset 1px 1px 2px rgba(255,255,255,0.3);
-            cursor: pointer; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); flex-shrink: 0; border-right: 1px solid #002244;
-        }
-        .start-btn:active, .start-btn.active { background: #00427a; box-shadow: inset 1px 1px 5px rgba(0,0,0,0.8); }
-
+        #taskbar { position: fixed; bottom: 0; left: 0; width: 100vw; height: 38px; background: linear-gradient(to bottom, #303030, #111); display: flex; align-items: center; z-index: 10000; border-top: 2px solid #555; }
+        .start-btn { background: linear-gradient(to bottom, #0078D7, #00427a); color: white; font-weight: bold; font-size: 15px; font-style: italic; height: 100%; padding: 0 20px 0 15px; border: none; border-radius: 0 15px 15px 0; display: flex; align-items: center; gap: 8px; cursor: pointer; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); border-right: 1px solid #002244; }
         #taskbar-windows { flex: 1; display: flex; gap: 4px; padding: 0 10px; overflow: hidden; align-items: center; height: 100%;}
-        
-        .taskbar-item {
-            background: linear-gradient(to bottom, #5a5a5a, #333);
-            border: 1px solid #222; border-radius: 3px; color: white;
-            padding: 0 10px; height: 28px; display: flex; align-items: center; gap: 8px;
-            cursor: pointer; min-width: 100px; max-width: 180px; font-size: 12px;
-            box-shadow: inset 1px 1px 1px rgba(255,255,255,0.1);
-        }
-        .taskbar-item img { width: 16px; height: 16px; image-rendering: pixelated; }
-        .taskbar-item span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .taskbar-item:hover { background: linear-gradient(to bottom, #6a6a6a, #444); }
+        .taskbar-item { background: linear-gradient(to bottom, #5a5a5a, #333); border: 1px solid #222; border-radius: 3px; color: white; padding: 0 10px; height: 28px; display: flex; align-items: center; gap: 8px; cursor: pointer; min-width: 100px; max-width: 180px; font-size: 12px; box-shadow: inset 1px 1px 1px rgba(255,255,255,0.1); }
         .taskbar-item.active { background: linear-gradient(to bottom, #222, #000); box-shadow: inset 0 2px 5px rgba(0,0,0,0.6); color: #ccc;}
-
-        .tray-area {
-            background: linear-gradient(to bottom, #222, #050505);
-            height: 100%; border-left: 1px solid #444; padding: 0 15px;
-            display: flex; align-items: center; gap: 15px; color: white; font-size: 12px;
-            box-shadow: inset 1px 0 1px rgba(255,255,255,0.1); flex-shrink: 0; position: relative;
-        }
+        .tray-area { background: linear-gradient(to bottom, #222, #050505); height: 100%; border-left: 1px solid #444; padding: 0 15px; display: flex; align-items: center; gap: 15px; color: white; font-size: 12px; }
 
         /* --- MENÚ DE INICIO --- */
-        #start-menu {
-            position: fixed; bottom: 38px; left: 0; width: 320px; height: 420px;
-            background: #fff; border: 1px solid #111; border-top-right-radius: 8px;
-            box-shadow: 4px -4px 15px rgba(0,0,0,0.6); z-index: 10001;
-            display: none; flex-direction: column; overflow: hidden;
-        }
-        #start-menu.active { display: flex; }
-        
-        .sm-header {
-            background: linear-gradient(to bottom, #2b2b36, #1a1a24); height: 55px;
-            display: flex; align-items: center; padding: 0 15px; gap: 12px; color: white; font-weight: bold; font-size: 15px; border-bottom: 2px solid #0078D7;
-        }
-        .sm-header img { width: 38px; height: 38px; border: 2px solid rgba(255,255,255,0.6); border-radius: 4px; image-rendering: pixelated;}
-        
+        #start-menu { position: fixed; bottom: 38px; left: 0; width: 320px; height: 420px; background: #fff; border: 1px solid #111; border-top-right-radius: 8px; box-shadow: 4px -4px 15px rgba(0,0,0,0.6); z-index: 10001; display: none; flex-direction: column; overflow: hidden; }
+        .sm-header { background: linear-gradient(to bottom, #2b2b36, #1a1a24); height: 55px; display: flex; align-items: center; padding: 0 15px; gap: 12px; color: white; font-weight: bold; font-size: 15px; border-bottom: 2px solid #0078D7; }
+        .sm-header img { width: 38px; height: 38px; border: 2px solid rgba(255,255,255,0.6); border-radius: 4px; }
         .sm-body { display: flex; flex: 1; }
         .sm-left { flex: 1; padding: 8px; display: flex; flex-direction: column; gap: 4px; background: #fff;}
         .sm-right { width: 140px; background: #e0e6ed; border-left: 1px solid #b5cbe6; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
-        
         .sm-item { display: flex; align-items: center; gap: 10px; padding: 10px; cursor: pointer; color: #000; border-radius: 4px;}
         .sm-item:hover { background: #0078D7; color: white; }
         .sm-item img { width: 28px; height: 28px; image-rendering: pixelated;}
         .sm-item span { font-size: 12px; font-weight: bold;}
-        .sm-item p { font-size: 10px; color: #666; font-weight: normal; margin: 0;}
-        .sm-item:hover p { color: #ddd; }
-        
-        .sm-footer {
-            background: linear-gradient(to bottom, #4a4a4a, #2b2b2b); height: 45px;
-            display: flex; justify-content: flex-end; align-items: center; padding: 0 15px; border-top: 1px solid #666;
-        }
+        .sm-item p { font-size: 10px; color: #666; margin: 0;}
+        .sm-footer { background: linear-gradient(to bottom, #4a4a4a, #2b2b2b); height: 45px; display: flex; justify-content: flex-end; align-items: center; padding: 0 15px; border-top: 1px solid #666; }
         .sm-footer-btn { display: flex; align-items: center; gap: 8px; color: white; font-size: 12px; cursor: pointer; padding: 5px 10px; border-radius: 3px;}
         .sm-footer-btn:hover { background: rgba(255,255,255,0.1); }
-        .sm-footer-btn img { width: 22px; height: 22px; image-rendering: pixelated;}
-
     </style>
 </head>
 <body>
 
+    <audio id="snd-trash" src="https://archive.org/download/WindowsXPStartup/Windows%20XP%20Recycle%20Bin.mp3"></audio>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png">
+            <div class="login-text">
+                <h1>SystemOS</h1>
+                <p>Iniciando sesión de DeLasAguas...</p>
+            </div>
+        </div>
+    </div>
+
     <div id="sc-widget-container">
-        <iframe id="sc-widget" allow="autoplay; encrypted-media; clipboard-write" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/juan-manuel-309/delasaguas-jam-08-2010&auto_play=false&enable_api=true" frameborder="0" width="100%" height="166"></iframe>
+        <iframe id="sc-widget" allow="autoplay; encrypted-media" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/juan-manuel-309/delasaguas-jam-08-2010&auto_play=false&enable_api=true" frameborder="0" width="100%" height="166"></iframe>
+    </div>
+
+    <div id="context-menu" class="context-menu" style="width: 180px;">
+        <div class="ctx-item" onclick="changeBackground()">Cambiar fondo de pantalla</div>
+        <div class="ctx-item" onclick="triggerScreensaver()">Iniciar Salvapantallas</div>
+        <div class="ctx-divider"></div>
+        <div class="ctx-item" onclick="location.reload()">Actualizar sistema</div>
+    </div>
+
+    <div id="restore-menu" class="context-menu" style="width: 120px;">
+        <div class="ctx-item" style="font-weight: bold;" onclick="restoreVideo()">Restaurar</div>
+    </div>
+
+    <div id="screensaver">
+        <div id="ss-text">DeLasAguas</div>
     </div>
 
     <div id="desktop-area">
-        <div class="desktop-icon" onclick="openWindow('notepad-leeme', 'LEEME.txt', 'https://win98icons.alexmeub.com/icons/png/notepad_file-0.png')">
-            <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-0.png" alt="Notepad">
-            <span>LEEME.txt</span>
+        <div class="desktop-icon" style="top: 20px; left: 20px;" onclick="openWindow('notepad-leeme', 'LEEME.txt', 'https://win98icons.alexmeub.com/icons/png/notepad_file-0.png')">
+            <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-0.png"><span>LEEME.txt</span>
         </div>
-        <div class="desktop-icon" onclick="openWindow('soundamp-player', 'SoundAmp', 'https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-3.png')">
-            <img src="https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-3.png" alt="Música">
-            <span>Mi Música</span>
+        <div class="desktop-icon" style="top: 110px; left: 20px;" onclick="openWindow('soundamp-player', 'Winamp', 'https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-3.png')">
+            <img src="https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-3.png"><span>Mi Música</span>
         </div>
-        <div class="desktop-icon" onclick="openWindow('folder-images', 'Mis Imágenes', 'https://win98icons.alexmeub.com/icons/png/directory_closed-4.png')">
-            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Imágenes">
-            <span>Mis Imágenes</span>
+        <div class="desktop-icon" style="top: 200px; left: 20px;" onclick="openWindow('folder-images', 'Mis Imágenes', 'https://win98icons.alexmeub.com/icons/png/directory_closed-4.png')">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png"><span>Mis Imágenes</span>
         </div>
-        <div class="desktop-icon" onclick="openWindow('folder-videos', 'Mis Videos', 'https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png')">
-            <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" alt="Videos">
-            <span>Mis Videos</span>
+        <div class="desktop-icon" style="top: 290px; left: 20px;" onclick="openWindow('folder-videos', 'Mis Videos', 'https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png')">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png"><span>Mis Videos</span>
+        </div>
+        <div class="desktop-icon" style="top: 380px; left: 20px;" onclick="openWindow('paint-window', 'Paint', 'https://win98icons.alexmeub.com/icons/png/paint_file-0.png')">
+            <img src="https://win98icons.alexmeub.com/icons/png/paint_file-0.png"><span>MS Paint</span>
+        </div>
+        <div class="desktop-icon" id="icon-trash" style="bottom: 20px; right: 20px;" onclick="openWindow('folder-trash', 'Papelera', 'https://win98icons.alexmeub.com/icons/png/recycle_bin_full-4.png')">
+            <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_full-4.png"><span>Papelera</span>
         </div>
     </div>
 
 
-    <div id="notepad-leeme" class="window-container hidden" style="top: 50px; left: 600px; width: 450px; height: 350px;">
+    <div id="paint-window" class="window-container hidden" style="top: 60px; left: 300px; width: 450px; height: 440px; z-index: 5000;">
+        <div class="os-titlebar">
+            <div class="os-title"><img src="https://win98icons.alexmeub.com/icons/png/paint_file-0.png"> Sin título - Paint</div>
+            <div class="os-controls">
+                <div class="os-btn os-btn-blue" onclick="minimizeWindow('paint-window', event)">_</div>
+                <div class="os-btn os-btn-close" onclick="closeWindow('paint-window', event)">X</div>
+            </div>
+        </div>
+        <div class="paint-toolbar">
+            <div class="paint-row">
+                <span>Colores:</span>
+                <div class="color-btn active" style="background: #000;" onclick="changePaintColor('#000', this)"></div>
+                <div class="color-btn" style="background: #808080;" onclick="changePaintColor('#808080', this)"></div>
+                <div class="color-btn" style="background: #f00;" onclick="changePaintColor('#f00', this)"></div>
+                <div class="color-btn" style="background: #00f;" onclick="changePaintColor('#00f', this)"></div>
+                <div class="color-btn" style="background: #0f0;" onclick="changePaintColor('#0f0', this)"></div>
+                <div class="color-btn" style="background: #ff0;" onclick="changePaintColor('#ff0', this)"></div>
+                <div class="color-btn" style="background: #00ffff;" onclick="changePaintColor('#00ffff', this)"></div>
+                <div class="color-btn" style="background: #ff00ff;" onclick="changePaintColor('#ff00ff', this)"></div>
+                <div class="color-btn" style="background: #fff;" onclick="changePaintColor('#fff', this)" title="Goma de borrar (Blanco)"></div>
+            </div>
+            <div class="paint-row">
+                <span>Grosor:</span>
+                <input type="range" min="1" max="25" value="5" oninput="changePaintSize(this.value)" style="width:80px; cursor:pointer;">
+                <button class="paint-action-btn" onclick="clearPaint()" style="margin-left:auto;">Borrar lienzo</button>
+                <button class="paint-action-btn" onclick="savePaint()">Guardar</button>
+            </div>
+        </div>
+        <div class="os-main-content" style="padding:10px; background:#808080; display:flex; justify-content:center; align-items:center;">
+            <canvas id="paint-canvas" width="400" height="300" style="background:#fff; border: 1px solid #000; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); cursor: crosshair;"></canvas>
+        </div>
+    </div>
+
+    <div id="folder-trash" class="window-container hidden" style="top: 100px; left: 200px; width: 600px; height: 350px;">
+        <div class="os-titlebar">
+            <div class="os-title"><img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_full-4.png"> Papelera de Reciclaje</div>
+            <div class="os-controls">
+                <div class="os-btn os-btn-blue" onclick="minimizeWindow('folder-trash', event)">_</div>
+                <div class="os-btn os-btn-close" onclick="closeWindow('folder-trash', event)">X</div>
+            </div>
+        </div>
+        <div class="os-explorer-body">
+            <div class="os-sidebar-panel">
+                <div class="os-sidebar-box">
+                    <div class="os-box-header">Tareas de la Papelera</div>
+                    <div class="os-box-content">
+                        <div class="sidebar-link" onclick="alert('No puedes escapar de tus errores.')">Vaciar Papelera</div>
+                    </div>
+                </div>
+            </div>
+            <div class="os-main-content grid-files" id="trash-grid" style="gap: 10px;">
+                <div class="file-item" id="trashed-video" oncontextmenu="showRestoreMenu(event)">
+                    <img class="file-thumb" src="https://img.youtube.com/vi/VkqwETnA510/hqdefault.jpg">
+                    <span>FBLA.avi</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notepad-leeme" class="window-container hidden" style="top: 50px; left: 550px; width: 450px; height: 350px;">
         <div class="os-titlebar">
             <div class="os-title"><img src="https://win98icons.alexmeub.com/icons/png/notepad_file-0.png"> LEEME.txt - Bloc de notas</div>
             <div class="os-controls">
@@ -328,7 +340,7 @@ Su legado se condensa en "Los sueños de Pellicciaro", un proyecto independiente
         </div>
     </div>
 
-    <div id="soundamp-player" class="window-container winamp-window hidden" style="top: 150px; left: 100px;">
+    <div id="soundamp-player" class="window-container winamp-window hidden" style="top: 100px; left: 100px;">
         <div class="wa-titlebar">
             <div class="wa-title">SOUNDAMP 3.0</div>
             <div class="wa-controls">
@@ -337,7 +349,7 @@ Su legado se condensa en "Los sueños de Pellicciaro", un proyecto independiente
             </div>
         </div>
         
-        <div class="wa-module wa-body">
+        <div class="wa-module">
             <div class="wa-screen-container">
                 <div class="wa-left-screen">
                     <div class="wa-time" id="wa-time-display">00:00</div>
@@ -346,40 +358,39 @@ Su legado se condensa en "Los sueños de Pellicciaro", un proyecto independiente
                     </div>
                 </div>
                 <div class="wa-info">
-                    <div class="wa-title-scroll">1. DeLasAguas - El Largo (08-2010) *** </div>
+                    <div class="wa-title-scroll" id="wa-title-marquee">1. DeLasAguas - El Largo (08-2010) *** </div>
                     <div class="wa-stats"><span>192 kbps</span> <span>44 kHz</span></div>
                 </div>
             </div>
             
             <div class="wa-slider-area">
-                <div class="wa-timeline-text">
-                    <span id="wa-current-time-line">00:00</span>
-                    <span id="wa-total-time-line">--:--</span>
-                </div>
+                <div class="wa-timeline-text"><span id="wa-current-time-line">00:00</span><span id="wa-total-time-line">10:01</span></div>
                 <input type="range" class="wa-seek-slider" id="wa-seek-slider" min="0" max="100" value="0">
             </div>
             
             <div class="wa-controls-area">
                 <div class="wa-buttons">
                     <button class="wa-btn" onclick="scStop()">|&lt;</button>
-                    <button class="wa-btn wa-btn-play play" onclick="scPlay()">►</button>
+                    <button class="wa-btn play" onclick="scPlay()">►</button>
                     <button class="wa-btn" onclick="scPause()">||</button>
                     <button class="wa-btn" onclick="scStop()">■</button>
                     <button class="wa-btn" onclick="scStop()">&gt;|</button>
                 </div>
                 <div class="wa-volume-box">
                     <span>VOL</span>
-                    <input type="range" class="wa-vol-slider" id="wa-vol-slider" min="0" max="100" value="100" title="Volumen">
+                    <input type="range" class="wa-vol-slider" id="wa-vol-slider" min="0" max="100" value="100">
                 </div>
             </div>
         </div>
 
         <div class="wa-module wa-playlist-module">
-            <div class="wa-pl-item active" onclick="scPlay()"><span>1. El Largo (Jam 08-2010)</span> <span id="wa-total-time">Cargando...</span></div>
-        </div>
+            <div class="wa-pl-item active" id="pl-1" onclick="scPlay()">
+                <span>1. El Largo (Jam 08-2010)</span> <span>10:01</span>
+            </div>
+            </div>
     </div>
 
-    <div id="folder-images" class="window-container hidden" style="top: 80px; left: 150px; width: 650px; height: 450px;">
+    <div id="folder-images" class="window-container hidden" style="top: 80px; left: 150px; width: 750px; height: 500px;">
         <div class="os-titlebar">
             <div class="os-title"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png"> Mis Imágenes</div>
             <div class="os-controls">
@@ -444,7 +455,7 @@ Su legado se condensa en "Los sueños de Pellicciaro", un proyecto independiente
                     </div>
                 </div>
             </div>
-            <div class="os-main-content grid-files">
+            <div class="os-main-content grid-files" id="videos-grid">
                 <div class="file-item" onclick="openVideo('KVc3yQr89to', 'NuevoDía.avi')">
                     <img class="file-thumb" src="https://img.youtube.com/vi/KVc3yQr89to/hqdefault.jpg"><span>NuevoDía.avi</span>
                 </div>
@@ -499,6 +510,10 @@ Su legado se condensa en "Los sueños de Pellicciaro", un proyecto independiente
                     <img src="https://win98icons.alexmeub.com/icons/png/cd_audio_cd_a-3.png">
                     <div><span>Reproductor de Música</span><p>SoundAmp 3.0</p></div>
                 </div>
+                <div class="sm-item" onclick="openWindow('paint-window', 'Paint', 'https://win98icons.alexmeub.com/icons/png/paint_file-0.png'); toggleStartMenu(event)">
+                    <img src="https://win98icons.alexmeub.com/icons/png/paint_file-0.png">
+                    <div><span>MS Paint</span><p>Dibujo libre</p></div>
+                </div>
                 <div class="sm-item" onclick="openWindow('notepad-leeme', 'LEEME.txt', 'https://win98icons.alexmeub.com/icons/png/notepad_file-0.png'); toggleStartMenu(event)">
                     <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-0.png">
                     <div><span>Bloc de notas</span><p>Editor de texto</p></div>
@@ -532,28 +547,164 @@ Su legado se condensa en "Los sueños de Pellicciaro", un proyecto independiente
     </div>
 
     <script>
-        // --- 0. ARRANQUE INSTANTÁNEO ---
+        // --- 0. ARRANQUE INSTANTÁNEO Y LOGIN ---
         window.onload = () => {
+            initPaint();
+
             setTimeout(() => {
-                // Abren en cascada y dejan los iconos del escritorio libres
+                const login = document.getElementById('login-screen');
+                login.style.opacity = '0';
+                setTimeout(() => { login.style.display = 'none'; }, 500);
+                
                 openWindow('folder-images', 'Mis Imágenes', 'https://win98icons.alexmeub.com/icons/png/directory_closed-4.png');
                 openWindow('folder-videos', 'Mis Videos', 'https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png');
                 openWindow('notepad-leeme', 'LEEME.txt', 'https://win98icons.alexmeub.com/icons/png/notepad_file-0.png');
-            }, 100);
+            }, 2000);
+
+            document.querySelectorAll('.desktop-icon').forEach(icon => {
+                makeIconDraggable(icon);
+            });
         };
 
+        // --- ICONOS DE ESCRITORIO ARRASTRABLES ---
+        function makeIconDraggable(elmnt) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            elmnt.onmousedown = dragMouseDown;
 
-        // --- 1. LÓGICA DE VENTANAS Y BARRA DE TAREAS ---
+            function dragMouseDown(e) {
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+
+        // --- MENU CLIC DERECHO & FONDO DE PANTALLA ---
+        const bgImages = [
+            "https://static.boredpanda.com/blog/wp-content/uploads/2017/06/DSC00330-Edit-59391339deded__880.jpg",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgPsdaTj9ebqPIdCv8cc0ofCD7OjIh7y264BCYUvoTINijmxaU6LJVrMgh1lpkAD1bH-Wn62BIWjQczsNkF8cHSakDbgeLFDdnUhZyZhzOgVYSqu9phnU4HutjuZOCgHjt6Dk2Vs9kUDnw/s1600/Dla_prov.jpg",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_JczWFySWlfOX7f5xAELbDkjKwvgxlWwgPnmdD5DTvnp_zicjcrshyphenhyphen78lee2I-MEP2LglMxmBo-Jpgf4BPRRLFs6C0CfjXKdSQW5T9Rf9XRCUG6FbC86Wsx30W_Q3uKKdp1az7h3cvpw/s1600/EPR.jpg",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHuIyhlzrd5RO2p7NVkoIBJ06uSDTtIzCQ_Pe6ctGmPtJ8_7Np7CLlAOIbXQRtsa09hyphenhyphenVQObMuVTSNRDJpgU9h5-DyNAWEvPRXyCw_OolRyC6KqGyl3kQUSWQDLFXhF9qwWHbRem3S_cs/s1600/De+las+Aguas.jpg",
+            "https://iili.io/qfCtFrg.jpg",
+            "https://iili.io/qfCD3t2.jpg"
+        ];
+        let bgIndex = 0;
+
+        document.getElementById('desktop-area').addEventListener('contextmenu', (e) => {
+            if(e.target.id === 'desktop-area') {
+                e.preventDefault();
+                const ctx = document.getElementById('context-menu');
+                ctx.style.display = 'flex';
+                ctx.style.left = e.pageX + 'px';
+                ctx.style.top = e.pageY + 'px';
+            }
+        });
+
+        function showRestoreMenu(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const rMenu = document.getElementById('restore-menu');
+            rMenu.style.display = 'flex';
+            rMenu.style.left = e.pageX + 'px';
+            rMenu.style.top = e.pageY + 'px';
+            document.getElementById('context-menu').style.display = 'none'; 
+        }
+
+        function restoreVideo() {
+            document.getElementById('restore-menu').style.display = 'none';
+            const trashedVid = document.getElementById('trashed-video');
+            if(trashedVid) {
+                trashedVid.remove();
+                
+                document.querySelector('#icon-trash img').src = 'https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png';
+                document.querySelector('#folder-trash .os-title img').src = 'https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png';
+                
+                const videoGrid = document.getElementById('videos-grid');
+                const newVid = document.createElement('div');
+                newVid.className = 'file-item';
+                newVid.onclick = () => openVideo('VkqwETnA510', 'FBLA.avi');
+                newVid.innerHTML = `
+                    <img class="file-thumb" src="https://img.youtube.com/vi/VkqwETnA510/hqdefault.jpg">
+                    <span>FBLA.avi</span>
+                `;
+                videoGrid.appendChild(newVid);
+                
+                const trashSound = document.getElementById('snd-trash');
+                trashSound.currentTime = 0;
+                trashSound.play().catch(()=>{});
+            }
+        }
+
+        function changeBackground() {
+            bgIndex = (bgIndex + 1) % bgImages.length;
+            document.body.style.backgroundImage = `url('${bgImages[bgIndex]}')`;
+            if (bgIndex === 0) {
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundRepeat = 'no-repeat';
+            } else {
+                document.body.style.backgroundSize = 'auto'; 
+                document.body.style.backgroundRepeat = 'repeat'; 
+            }
+            document.getElementById('context-menu').style.display = 'none';
+        }
+
+        // --- SALVAPANTALLAS COMIC SANS ---
+        let idleTime = 0;
+        const ss = document.getElementById('screensaver');
+        const ssLogo = document.getElementById('ss-text');
+        let dx = 4, dy = 4, ssX = window.innerWidth/2, ssY = window.innerHeight/2;
+
+        function triggerScreensaver() {
+            ss.style.display = 'block';
+            document.getElementById('context-menu').style.display = 'none';
+            animateScreensaver();
+        }
+
+        function animateScreensaver() {
+            if(ss.style.display === 'none') return;
+            
+            let hit = false;
+            if(ssX <= 0 || ssX + ssLogo.offsetWidth >= window.innerWidth) { dx = -dx; hit = true; }
+            if(ssY <= 0 || ssY + ssLogo.offsetHeight >= window.innerHeight) { dy = -dy; hit = true; }
+            
+            ssX += dx; ssY += dy;
+            ssLogo.style.left = ssX + 'px'; 
+            ssLogo.style.top = ssY + 'px';
+
+            if (hit) { ssLogo.style.color = `hsl(${Math.random()*360}, 100%, 50%)`; }
+            
+            requestAnimationFrame(animateScreensaver);
+        }
+
+        document.addEventListener('mousemove', () => { idleTime = 0; ss.style.display = 'none'; });
+        document.addEventListener('keydown', () => { idleTime = 0; ss.style.display = 'none'; });
+        setInterval(() => { idleTime++; if (idleTime >= 60 && ss.style.display === 'none') triggerScreensaver(); }, 1000);
+
+
+        // --- LÓGICA DE VENTANAS Y BARRA DE TAREAS ---
         let zIndexCounter = 100;
         const activeWindows = {};
 
         function openWindow(id, title, iconSrc) {
             const win = document.getElementById(id);
             win.classList.remove('hidden', 'minimized');
-            
-            // Fix para Z-index
-            zIndexCounter++;
-            win.style.zIndex = zIndexCounter;
+            win.style.zIndex = ++zIndexCounter;
 
             if (!activeWindows[id]) {
                 activeWindows[id] = true;
@@ -576,11 +727,10 @@ Su legado se condensa en "Los sueños de Pellicciaro", un proyecto independiente
             
             if (activeWindows[id]) {
                 delete activeWindows[id];
-                const btn = document.getElementById('taskbar-btn-' + id);
-                if (btn) btn.remove();
+                document.getElementById('taskbar-btn-' + id).remove();
             }
 
-            if (id === 'soundamp-player') scStop(); // Apagar musica si se cierra winamp
+            if (id === 'soundamp-player') scStop();
             updateTaskbar();
         }
 
@@ -598,17 +748,10 @@ Su legado se condensa en "Los sueños de Pellicciaro", un proyecto independiente
         function toggleWindow(id) {
             const win = document.getElementById(id);
             if (win.classList.contains('minimized')) {
-                win.classList.remove('minimized');
-                zIndexCounter++;
-                win.style.zIndex = zIndexCounter;
+                win.classList.remove('minimized'); win.style.zIndex = ++zIndexCounter;
             } else {
-                const currentZ = parseInt(win.style.zIndex) || 0;
-                if (currentZ === zIndexCounter) {
-                    win.classList.add('minimized'); 
-                } else {
-                    zIndexCounter++;
-                    win.style.zIndex = zIndexCounter; 
-                }
+                if (parseInt(win.style.zIndex) === zIndexCounter) win.classList.add('minimized'); 
+                else win.style.zIndex = ++zIndexCounter; 
             }
             updateTaskbar();
         }
@@ -618,107 +761,129 @@ Su legado se condensa en "Los sueños de Pellicciaro", un proyecto independiente
                 const btn = document.getElementById('taskbar-btn-' + id);
                 const win = document.getElementById(id);
                 if (btn && win) {
-                    const isTop = (parseInt(win.style.zIndex) || 0) === zIndexCounter;
-                    if (!win.classList.contains('minimized') && isTop) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
+                    if (!win.classList.contains('minimized') && parseInt(win.style.zIndex) === zIndexCounter) btn.classList.add('active');
+                    else btn.classList.remove('active');
                 }
             }
         }
 
-        // LÓGICA DE ARRASTRE DE VENTANAS CON LÍMITES FÍSICOS
-        function makeDraggable(win) {
+        function makeDraggableWindow(win) {
             const titlebar = win.querySelector('.os-titlebar') || win.querySelector('.wa-titlebar');
             if (!titlebar) return;
 
-            win.addEventListener('mousedown', () => {
-                zIndexCounter++;
-                win.style.zIndex = zIndexCounter;
-                updateTaskbar();
-            });
+            win.addEventListener('mousedown', () => { win.style.zIndex = ++zIndexCounter; updateTaskbar(); });
 
-            titlebar.addEventListener('mousedown', dragMouseDown);
-
-            function dragMouseDown(e) {
-                // Previene arrastrar si se hizo clic en un botón de control
-                if(e.target.closest('.os-controls') || e.target.closest('.wa-controls')) return;
+            titlebar.addEventListener('mousedown', (e) => {
+                if(e.target.closest('.os-controls') || e.target.closest('.wa-controls') || e.target.closest('.paint-toolbar')) return;
                 if(win.classList.contains('maximized')) return;
                 e.preventDefault();
-                
-                let pos3 = e.clientX;
-                let pos4 = e.clientY;
+                let pos3 = e.clientX, pos4 = e.clientY;
                 
                 function elementDrag(e2) {
                     e2.preventDefault();
-                    let pos1 = pos3 - e2.clientX;
-                    let pos2 = pos4 - e2.clientY;
-                    pos3 = e2.clientX;
-                    pos4 = e2.clientY;
+                    let newTop = win.offsetTop - (pos4 - e2.clientY);
+                    let newLeft = win.offsetLeft - (pos3 - e2.clientX);
+                    pos3 = e2.clientX; pos4 = e2.clientY;
                     
-                    let newTop = win.offsetTop - pos2;
-                    let newLeft = win.offsetLeft - pos1;
-
-                    // LÍMITES DE PANTALLA
                     const maxLeft = window.innerWidth - 80; 
                     const maxTop = window.innerHeight - 38 - 30;
-                    
-                    newLeft = Math.max(-win.offsetWidth + 80, Math.min(newLeft, maxLeft));
-                    newTop = Math.max(0, Math.min(newTop, maxTop));
-
-                    win.style.top = newTop + "px";
-                    win.style.left = newLeft + "px";
+                    win.style.top = Math.max(0, Math.min(newTop, maxTop)) + "px";
+                    win.style.left = Math.max(-win.offsetWidth + 80, Math.min(newLeft, maxLeft)) + "px";
                 }
-                
-                function closeDragElement() {
-                    document.removeEventListener('mouseup', closeDragElement);
-                    document.removeEventListener('mousemove', elementDrag);
-                }
-
-                document.addEventListener('mouseup', closeDragElement);
-                document.addEventListener('mousemove', elementDrag);
-            }
+                function closeDragElement() { document.removeEventListener('mouseup', closeDragElement); document.removeEventListener('mousemove', elementDrag); }
+                document.addEventListener('mouseup', closeDragElement); document.addEventListener('mousemove', elementDrag);
+            });
         }
-        document.querySelectorAll('.window-container').forEach(win => { makeDraggable(win); });
+        document.querySelectorAll('.window-container').forEach(win => { makeDraggableWindow(win); });
 
 
-        // --- 2. MENÚ DE INICIO ---
+        // --- MENU DE INICIO Y CLICK GLOBAL ---
         function toggleStartMenu(e) { 
             if(e) e.stopPropagation();
             const sm = document.getElementById('start-menu');
             const btn = document.getElementById('start-btn');
-            
-            if(sm.style.display === 'flex') {
-                sm.style.display = 'none';
-                btn.classList.remove('active');
-            } else {
-                sm.style.display = 'flex';
-                btn.classList.add('active');
-            }
+            sm.style.display = sm.style.display === 'flex' ? 'none' : 'flex';
+            btn.classList.toggle('active');
+            document.getElementById('context-menu').style.display = 'none';
+            document.getElementById('restore-menu').style.display = 'none';
         }
         
-        // Cierra el menú al clickear fuera
         document.addEventListener('click', (e) => {
             const sm = document.getElementById('start-menu');
             const btn = document.getElementById('start-btn');
-            
-            if (sm.style.display === 'flex' && !sm.contains(e.target) && !btn.contains(e.target)) {
-                sm.style.display = 'none';
-                btn.classList.remove('active');
+            if (sm.style.display === 'flex' && !sm.contains(e.target) && !e.target.closest('#start-btn')) {
+                sm.style.display = 'none'; btn.classList.remove('active');
+            }
+            if (e.target.id !== 'desktop-area' && !e.target.closest('#trashed-video')) {
+                document.getElementById('context-menu').style.display = 'none';
+                document.getElementById('restore-menu').style.display = 'none';
             }
         });
 
 
-        // --- 3. LÓGICA SOUNDAMP (CON SLIDER DE PROGRESO FUNCIONAL) ---
+        // --- APP: MS PAINT BÁSICO MEJORADO ---
+        let painting = false;
+        let paintColor = '#000000';
+        let paintSize = 5;
+        let paintCanvas, pCtx;
+
+        function initPaint() {
+            paintCanvas = document.getElementById('paint-canvas');
+            pCtx = paintCanvas.getContext('2d');
+            clearPaint(); 
+            
+            paintCanvas.addEventListener('mousedown', startPosition);
+            paintCanvas.addEventListener('mouseup', endPosition);
+            paintCanvas.addEventListener('mousemove', draw);
+            paintCanvas.addEventListener('mouseleave', endPosition);
+        }
+
+        function startPosition(e) { painting = true; draw(e); }
+        function endPosition() { painting = false; pCtx.beginPath(); }
+        
+        function draw(e) {
+            if(!painting) return;
+            const rect = paintCanvas.getBoundingClientRect();
+            let x = e.clientX - rect.left; 
+            let y = e.clientY - rect.top;
+            
+            pCtx.lineWidth = paintSize;
+            pCtx.lineCap = 'round';
+            pCtx.strokeStyle = paintColor;
+            
+            pCtx.lineTo(x, y);
+            pCtx.stroke();
+            pCtx.beginPath();
+            pCtx.moveTo(x, y);
+        }
+        
+        function changePaintColor(c, el) { 
+            paintColor = c; 
+            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+            if(el) el.classList.add('active');
+        }
+        
+        function changePaintSize(val) { paintSize = val; }
+        
+        function clearPaint() { 
+            pCtx.fillStyle = "#ffffff"; 
+            pCtx.fillRect(0, 0, paintCanvas.width, paintCanvas.height); 
+        }
+
+        function savePaint() {
+            const link = document.createElement('a');
+            link.download = 'obra_maestra.png';
+            link.href = paintCanvas.toDataURL();
+            link.click();
+        }
+
+
+        // --- LÓGICA SOUNDAMP (10:01 Forzado visualmente) ---
         const widget = SC.Widget(document.getElementById('sc-widget'));
         const timeDisplay = document.getElementById('wa-time-display');
+        const progressBar = document.getElementById('wa-progress-fill');
         const visualizer = document.getElementById('visualizer');
-        const totalTimeDisplay = document.getElementById('wa-total-time');
-        
-        // Elementos del slider
         const seekSlider = document.getElementById('wa-seek-slider');
-        const totalTimeLine = document.getElementById('wa-total-time-line');
         const currentTimeLine = document.getElementById('wa-current-time-line');
         
         let trackDuration = 0;
@@ -731,35 +896,18 @@ Su legado se condensa en "Los sueños de Pellicciaro", un proyecto independiente
             return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
         }
 
-        // Obtener la duración de la canción al cargar
         widget.bind(SC.Widget.Events.READY, () => {
-            widget.getDuration((duration) => { 
-                trackDuration = duration; 
-                const formatted = formatTime(duration);
-                totalTimeDisplay.innerText = formatted;
-                totalTimeLine.innerText = formatted;
-            });
+            widget.getDuration((d) => { trackDuration = d; });
         });
 
         widget.bind(SC.Widget.Events.PLAY, () => { visualizer.classList.add('playing'); });
         widget.bind(SC.Widget.Events.PAUSE, () => { visualizer.classList.remove('playing'); });
-        widget.bind(SC.Widget.Events.FINISH, () => { visualizer.classList.remove('playing'); });
-
+        
         widget.bind(SC.Widget.Events.PLAY_PROGRESS, (data) => {
-            const formattedCurrent = formatTime(data.currentPosition);
-            timeDisplay.innerText = formattedCurrent;
-            currentTimeLine.innerText = formattedCurrent; 
+            const f = formatTime(data.currentPosition);
+            timeDisplay.innerText = f; currentTimeLine.innerText = f; 
             
-            if (trackDuration === 0) {
-                 widget.getDuration((duration) => {
-                    trackDuration = duration;
-                    const f = formatTime(duration);
-                    totalTimeDisplay.innerText = f;
-                    totalTimeLine.innerText = f;
-                 });
-            }
-
-            // Mueve el slider automáticamente SI el usuario no lo está arrastrando
+            if (trackDuration === 0) widget.getDuration((d) => { trackDuration = d; });
             if(trackDuration > 0 && !isSeeking) {
                 seekSlider.value = (data.currentPosition / trackDuration) * 100;
             }
@@ -767,35 +915,17 @@ Su legado se condensa en "Los sueños de Pellicciaro", un proyecto independiente
 
         function scPlay() { widget.play(); }
         function scPause() { widget.pause(); }
-        function scStop() { 
-            widget.pause(); 
-            widget.seekTo(0); 
-            document.getElementById('visualizer').classList.remove('playing'); 
-            timeDisplay.innerText = "00:00"; 
-            currentTimeLine.innerText = "00:00";
-            seekSlider.value = 0;
-        }
-
-        // Eventos del Slider de Progreso para adelantar canción
-        seekSlider.addEventListener('mousedown', () => isSeeking = true);
-        seekSlider.addEventListener('mouseup', () => { isSeeking = false; });
-        seekSlider.addEventListener('touchstart', () => isSeeking = true);
-        seekSlider.addEventListener('touchend', () => { isSeeking = false; });
+        function scStop() { widget.pause(); widget.seekTo(0); timeDisplay.innerText = "00:00"; currentTimeLine.innerText = "00:00"; seekSlider.value = 0; }
         
+        seekSlider.addEventListener('mousedown', () => isSeeking = true);
+        seekSlider.addEventListener('mouseup', () => isSeeking = false);
         seekSlider.addEventListener('change', (e) => {
-            if (trackDuration > 0) {
-                const percent = e.target.value / 100;
-                widget.seekTo(percent * trackDuration);
-            }
+            if (trackDuration > 0) widget.seekTo((e.target.value / 100) * trackDuration);
         });
-
-        // Evento del Fader de Volumen
-        document.getElementById('wa-vol-slider').addEventListener('input', function(e) {
-            widget.setVolume(e.target.value);
-        });
+        document.getElementById('wa-vol-slider').addEventListener('input', (e) => widget.setVolume(e.target.value));
 
 
-        // --- 4. VISOR MULTIMEDIA Y GALERÍA ---
+        // --- VISOR MULTIMEDIA Y GALERÍA ---
         const imageGallery = [
             { src: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgPsdaTj9ebqPIdCv8cc0ofCD7OjIh7y264BCYUvoTINijmxaU6LJVrMgh1lpkAD1bH-Wn62BIWjQczsNkF8cHSakDbgeLFDdnUhZyZhzOgVYSqu9phnU4HutjuZOCgHjt6Dk2Vs9kUDnw/s1600/Dla_prov.jpg", title: "Dla_prov.jpg" },
             { src: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_JczWFySWlfOX7f5xAELbDkjKwvgxlWwgPnmdD5DTvnp_zicjcrshyphenhyphen78lee2I-MEP2LglMxmBo-Jpgf4BPRRLFs6C0CfjXKdSQW5T9Rf9XRCUG6FbC86Wsx30W_Q3uKKdp1az7h3cvpw/s1600/EPR.jpg", title: "EPR.jpg" },
@@ -806,58 +936,40 @@ Su legado se condensa en "Los sueños de Pellicciaro", un proyecto independiente
         let currentImageIndex = 0;
 
         function openVideo(src, title) {
-            scPause(); // Solo se frena la música si ves un video
-            
+            scPause(); 
             document.getElementById('media-title').innerHTML = `<img src="https://win98icons.alexmeub.com/icons/png/video_file-0.png"> Reproductor Multimedia - ${title}`;
             document.getElementById('viewer-image').style.display = 'none';
-            document.getElementById('media-viewer-toolbar').classList.remove('active'); // Ocultar flechas
-            
+            document.getElementById('media-viewer-toolbar').style.display = 'none'; 
             document.getElementById('viewer-iframe').style.display = 'block';
             document.getElementById('viewer-iframe').src = `https://www.youtube.com/embed/${src}?autoplay=1&rel=0`;
-            
             openWindow('media-viewer', title, 'https://win98icons.alexmeub.com/icons/png/video_file-0.png');
         }
 
         function openImage(index) {
-            // No se frena la música al abrir fotos
             currentImageIndex = index;
             const imgObj = imageGallery[index];
-            
             document.getElementById('media-title').innerHTML = `<img src="https://win98icons.alexmeub.com/icons/png/image_file-0.png"> Visor de Imágenes - ${imgObj.title}`;
             document.getElementById('viewer-iframe').style.display = 'none';
             document.getElementById('viewer-iframe').src = ""; 
-            
             document.getElementById('viewer-image').style.display = 'block';
             document.getElementById('viewer-image').src = imgObj.src;
-            document.getElementById('media-viewer-toolbar').classList.add('active'); // Mostrar flechas
-            
+            document.getElementById('media-viewer-toolbar').style.display = 'flex'; 
             openWindow('media-viewer', imgObj.title, 'https://win98icons.alexmeub.com/icons/png/image_file-0.png');
         }
 
-        function prevImage() {
-            if(currentImageIndex > 0) openImage(currentImageIndex - 1);
-            else openImage(imageGallery.length - 1);
-        }
-        function nextImage() {
-            if(currentImageIndex < imageGallery.length - 1) openImage(currentImageIndex + 1);
-            else openImage(0);
-        }
+        function prevImage() { if(currentImageIndex > 0) openImage(currentImageIndex - 1); else openImage(imageGallery.length - 1); }
+        function nextImage() { if(currentImageIndex < imageGallery.length - 1) openImage(currentImageIndex + 1); else openImage(0); }
+        function closeViewer(e) { closeWindow('media-viewer', e); setTimeout(() => { document.getElementById('viewer-iframe').src = ''; }, 300); }
 
-        function closeViewer(e) { 
-            closeWindow('media-viewer', e); 
-            setTimeout(() => { document.getElementById('viewer-iframe').src = ''; }, 300);
-        }
-
-        // --- 5. RELOJ ---
-        function updateClock() {
-            const now = new Date();
-            let hours = now.getHours();
+        // --- RELOJ ---
+        setInterval(() => {
+            const n = new Date();
+            let hours = n.getHours();
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12; hours = hours ? hours : 12; 
             document.getElementById('clock').innerText = `${hours}:${minutes} ${ampm}`;
-        }
-        setInterval(updateClock, 1000); updateClock();
+        }, 1000);
 
     </script>
 </body>
