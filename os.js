@@ -63,7 +63,11 @@ window.closeWindow = function(id, e) {
         if(btn) btn.remove();
     }
     if (id === 'soundamp-player' && window.scStop) window.scStop();
-    if (id === 'media-viewer') document.getElementById('viewer-iframe').src = '';
+    
+    // Al cerrar el visor, cortamos el video de YT
+    if (id === 'media-viewer') {
+        document.getElementById('viewer-iframe').src = '';
+    }
     updateTaskbar();
 };
 
@@ -213,7 +217,7 @@ window.emptyTrash = function() {
     window.openWindow('error-window');
 }
 
-// SALVAPANTALLAS (Actualizado)
+// SALVAPANTALLAS
 let idleTime = 0;
 const ss = document.getElementById('screensaver');
 const ssLogo = document.getElementById('ss-text');
@@ -236,7 +240,7 @@ document.addEventListener('mousemove', () => { idleTime = 0; if(ss) ss.style.dis
 document.addEventListener('keydown', () => { idleTime = 0; if(ss) ss.style.display = 'none'; });
 setInterval(() => { idleTime++; if (idleTime >= 60 && ss && ss.style.display === 'none') window.triggerScreensaver(); }, 1000);
 
-// VISOR MULTIMEDIA
+// VISOR MULTIMEDIA Y YOUTUBE LIMPIO
 const mediaImages = [
     { src: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgPsdaTj9ebqPIdCv8cc0ofCD7OjIh7y264BCYUvoTINijmxaU6LJVrMgh1lpkAD1bH-Wn62BIWjQczsNkF8cHSakDbgeLFDdnUhZyZhzOgVYSqu9phnU4HutjuZOCgHjt6Dk2Vs9kUDnw/s1600/Dla_prov.jpg", title: "Dla_prov.jpg" },
     { src: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_JczWFySWlfOX7f5xAELbDkjKwvgxlWwgPnmdD5DTvnp_zicjcrshyphenhyphen78lee2I-MEP2LglMxmBo-Jpgf4BPRRLFs6C0CfjXKdSQW5T9Rf9XRCUG6FbC86Wsx30W_Q3uKKdp1az7h3cvpw/s1600/EPR.jpg", title: "EPR.jpg" },
@@ -262,7 +266,9 @@ window.openVideo = function(videoId, title) {
     document.getElementById('viewer-image').style.display = 'none';
     document.getElementById('media-viewer-toolbar').classList.remove('active');
     document.getElementById('viewer-iframe').style.display = 'block';
-    document.getElementById('viewer-iframe').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    
+    // Parámetros YouTube: rel=0 (sugerencias solo del mismo canal), modestbranding=1 (sin logo), iv_load_policy=3 (sin anotaciones)
+    document.getElementById('viewer-iframe').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3`;
 };
 
 window.closeViewer = function(e) { window.closeWindow('media-viewer', e); };

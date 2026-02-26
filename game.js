@@ -1,4 +1,4 @@
-// --- GAME.JS: Motor Arcade Juegoclip (Épico, Narrativo y Despiadado) ---
+// --- GAME.JS: Motor Arcade Juegoclip (Épico, Narrativo, Despiadado y High Score) ---
 
 let gameWidget = null;
 let gameAnim;
@@ -12,10 +12,12 @@ let bombs = 3;
 let bombActive = 0; 
 let massiveFleetSpawned = false;
 
+// --- SISTEMA DE HIGH SCORE (localStorage) ---
+let highScore = localStorage.getItem('dematinale_highscore') || 0;
+
 let paddle = { x: 0, y: 0 }; 
 let playerShieldHp = 0; 
 let playerScale = 1.0; 
-let landingTimer = 0; // NUEVO: Para que el final no se corte de golpe
 let shakeTime = 0; 
 let weaponLevel = 1, shieldTimer = 0; 
 let currentAudioSecs = 0;
@@ -71,10 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('game-time').innerText = `TIME: ${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
             }
         });
-        // Quitamos el showGameOver automático del FINISH para que respete nuestra animación de aterrizaje.
     }
 
-    // Actualizar instrucciones HTML
     const instructions = document.querySelector('.game-instructions');
     if(instructions) {
         instructions.innerHTML = `> FLECHAS: MOVER<br><br>> ESPACIO: BOMBA PERIMETRO<br><br>> DISPARO AUTOMATICO`;
@@ -82,15 +82,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     stars = [];
     for(let i=0; i<60; i++) stars.push({ x: Math.random() * 800, y: Math.random() * 800, s: Math.random() * 0.8 + 0.4 });
+    
+    // Mostrar High Score en pantalla antes de jugar
+    updateScore(); 
 });
 
-// --- SPRITES VOLUMÉTRICOS (0:vacío, 1:base, 2:sombra, 3:brillo) ---
+// --- SPRITES VOLUMÉTRICOS ---
 const playerSprite = [ [0,0,3,0,0], [0,1,1,1,0], [1,1,3,1,1], [2,1,0,1,2], [2,0,0,0,2] ];
+const allySprite   = [ [0,0,3,0,0], [0,3,1,2,0], [3,1,1,1,2], [3,0,1,0,2], [0,0,2,0,0] ];
 
-// Aliados rediseñados
-const allySprite = [ [0,0,3,0,0], [0,3,1,2,0], [3,1,1,1,2], [3,0,1,0,2], [0,0,2,0,0] ];
-
-// ENEMIGOS
 const enemyBasic   = [ [2,0,1,0,3], [0,2,1,3,0], [0,2,0,3,0], [2,0,1,0,3] ]; 
 const enemyTank    = [ [0,0,2,3,0,0], [0,2,1,1,3,0], [2,1,0,0,1,3], [2,1,1,1,1,3], [0,2,0,0,3,0] ]; 
 const enemyShooter = [ [2,1,1,1,3], [2,0,1,0,3], [0,2,0,3,0], [0,0,1,0,0] ]; 
@@ -105,14 +105,12 @@ const asteroidShapes = [
 ];
 const powerupSprite = [ [0,3,3,0], [3,1,1,3], [3,1,1,3], [0,2,2,0] ];
 
-// JEFES TERRORÍFICOS
 const bossLeviatan = [ [2,0,0,0,0,0,0,3], [3,2,0,0,0,0,2,3], [1,3,2,0,0,2,3,1], [1,1,3,2,2,3,1,1], [0,1,1,1,1,1,1,0], [0,2,1,3,3,1,2,0], [2,0,1,0,0,1,0,3] ];
 const bossBehemoth = [ [0,2,2,2,2,2,0], [2,1,1,1,1,1,3], [2,1,0,1,0,1,3], [2,1,1,1,1,1,3], [0,2,1,1,1,3,0], [0,2,0,2,0,3,0] ];
 const bossAbaddon = [ [0,0,2,3,2,0,0], [0,2,1,1,1,3,0], [2,1,0,1,0,1,3], [3,1,1,1,1,1,3], [2,1,0,1,0,1,3], [0,2,1,3,1,3,0], [0,0,2,1,3,0,0], [0,0,0,2,0,0,0] ];
 const bossSprites = [bossLeviatan, bossBehemoth, bossAbaddon];
 const bossNames = ["LEVIATAN", "BEHEMOTH", "ABADDON"];
 
-// --- PALETAS ---
 const palPlayer = ['#0cf', '#008', '#fff'];
 const palAlly   = ['#0f8', '#050', '#aff']; 
 const palAst    = ['#888', '#555', '#ccc']; 
@@ -208,7 +206,7 @@ function spawnAllies(canvas, count = 4, yOffset = 150) {
         allies.push({ 
             x: (canvas.width / (count+1)) * (i + 1), 
             y: canvas.height + 50 + (Math.random()*150), 
-            targetY: canvas.height/2 + (Math.random()*200),
+            targetY: canvas.height/2 + (Math.random()*200), 
             speed: -6, state: 'entering', shield: 250 
         });
     }
@@ -216,7 +214,9 @@ function spawnAllies(canvas, count = 4, yOffset = 150) {
 
 function updateScore() { 
     const el = document.getElementById('game-score');
-    if(el) el.innerText = `SCORE: ${String(score).padStart(7, '0')} | BOMBAS: ${bombs}`; 
+    if(el) {
+        el.innerText = `HI: ${String(highScore).padStart(7, '0')} | SCORE: ${String(score).padStart(7, '0')} | BOMBAS: ${bombs}`; 
+    }
 }
 
 function takeHit(penalty) {
@@ -244,7 +244,7 @@ window.startSpaceGame = function() {
     canvas.height = canvas.parentElement.clientHeight - document.getElementById('game-header').offsetHeight;
     
     paddle.x = canvas.width / 2; paddle.y = canvas.height - 80; 
-    playerShieldHp = 0; bombs = 3; bombActive = 0; playerScale = 1.0; landingTimer = 0;
+    playerShieldHp = 0; bombs = 3; bombActive = 0; playerScale = 1.0;
     
     score = 0; frameCount = 0; currentAudioSecs = 0; gamePhase = -1;
     enemiesKilled = 0; bossesKilled = 0; massiveFleetSpawned = false; weaponLevel = 1;
@@ -259,8 +259,22 @@ window.startSpaceGame = function() {
 
 function showGameOver(msg) {
     isGameRunning = false; cancelAnimationFrame(gameAnim); if(gameWidget) gameWidget.pause();
+    
+    // GUARDADO DE HIGH SCORE
+    let isNewRecord = false;
+    if(score > highScore) {
+        highScore = score;
+        localStorage.setItem('dematinale_highscore', highScore);
+        isNewRecord = true;
+    }
+
+    let recordMsg = isNewRecord 
+        ? `<span style="color:#0ff; font-size:18px; font-weight:bold;">¡NUEVO RECORD MUNDIAL!</span>` 
+        : `<span style="font-size:14px; color:#aaa;">RECORD ACTUAL: ${highScore}</span>`;
+
     document.getElementById('game-msg').innerHTML = `
         <span style="color:#0f0; font-size:16px;">${msg}</span><br><br>
+        ${recordMsg}<br><br>
         <span style="font-size:32px; color:#ff0; text-shadow: 2px 2px #f00;">SCORE: ${score}</span><br><br>
         <span style="font-size:12px; color:#fff;">ENEMIGOS DESTRUIDOS: ${enemiesKilled}</span><br>
         <span style="font-size:12px; color:#fff;">JEFES ABATIDOS: ${bossesKilled}</span>
@@ -268,6 +282,16 @@ function showGameOver(msg) {
     document.getElementById('game-btn-start').innerText = "[ JUGAR DE NUEVO ]";
     document.getElementById('game-overlay').style.display = 'flex';
 }
+
+window.closeGameWindow = function(e) {
+    if(e) e.stopPropagation();
+    isGameRunning = false; cancelAnimationFrame(gameAnim); 
+    if(gameWidget) gameWidget.pause();
+    document.getElementById('game-overlay').style.display = 'flex';
+    const canvas = document.getElementById('game-canvas');
+    if(canvas) { const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    window.closeWindow('game-window', e);
+};
 
 function gameLoop() {
     if(!isGameRunning) return;
@@ -335,9 +359,9 @@ function gameLoop() {
 
     // PLANETAS
     if(gamePhase <= 1) { startPlanetY += 1.5; drawPlanet(ctx, canvas.width/2, startPlanetY + 400, 380, ['#003366', '#001133', '#005599']); }
-    if(gamePhase >= 13) { endPlanetY += 2.5; drawPlanet(ctx, canvas.width/2, endPlanetY - 400, 380, ['#552200', '#331100', '#884400']); }
+    if(gamePhase >= 12) { endPlanetY += 1.5; drawPlanet(ctx, canvas.width/2, endPlanetY - 400, 380, ['#552200', '#331100', '#884400']); }
 
-    // AGUJERO NEGRO (Rebotador y Letal)
+    // AGUJERO NEGRO
     if(blackHole) {
         blackHole.radius = Math.min(80, blackHole.radius + 1.0); 
         blackHole.rot += 0.4;
@@ -356,7 +380,7 @@ function gameLoop() {
         let dx = blackHole.x - paddle.x; let dy = blackHole.y - paddle.y;
         let dist = Math.hypot(dx, dy);
         if(dist > 10 && dist < 900) {
-            let force = 120 / dist; // MUY ABSORBENTE
+            let force = 120 / dist; 
             paddle.x += (dx / dist) * force; 
             paddle.y += (dy / dist) * force;
         }
@@ -371,20 +395,15 @@ function gameLoop() {
         paddle.x = Math.max(30, Math.min(canvas.width - 30, paddle.x));
         paddle.y = Math.max(30, Math.min(canvas.height - 30, paddle.y));
     } else {
-        // ATERRIZAJE ORGÁNICO
         let targetX = canvas.width / 2; let targetY = endPlanetY - 400; 
         paddle.x += (targetX - paddle.x) * 0.03; paddle.y += (targetY - paddle.y) * 0.03; 
         if(Math.hypot(targetX - paddle.x, targetY - paddle.y) < 200) {
             playerScale = Math.max(0, playerScale - 0.005); 
-            if(playerScale <= 0) {
-                // Delay dramático antes del Game Over
-                landingTimer++;
-                if(landingTimer > 90) showGameOver("¡MISION CUMPLIDA. SOBREVIVISTE AL CAOS TOTAL!");
-            }
+            if(playerScale === 0) showGameOver("¡MISION CUMPLIDA. SOBREVIVISTE AL CAOS TOTAL!");
         }
     }
 
-    // DIBUJAR JUGADOR Y ESCUDO (Escalable)
+    // DIBUJAR JUGADOR Y ESCUDO 
     if(!(shieldTimer > 0 && shieldTimer % 10 < 5) && playerScale > 0) {
         let playerPal = shieldTimer > 0 ? ['#ff0', '#a80', '#fff'] : palPlayer;
         drawSprite(ctx, playerSprite, paddle.x, paddle.y, playerPal, 0, scale * playerScale);
@@ -413,10 +432,9 @@ function gameLoop() {
             } 
         });
         
-        // Daño reducido a los jefes (especialmente al tipo 2 Behemoth)
         bosses.forEach(b => { 
             if(Math.hypot(b.x-paddle.x, b.y-paddle.y) < r) { 
-                b.hp -= (b.type === 2 ? 0.5 : 2); // Cae poco a poco durante los frames, pero no lo insta-mata
+                b.hp -= (b.type === 2 ? 0.5 : 2); 
                 b.hitFlash = 2; 
             } 
         });
@@ -449,7 +467,7 @@ function gameLoop() {
     if(currentAudioSecs >= 2 && !isRetreating && playerScale === 1.0 && frameCount % (weaponLevel === 3 ? 6 : 10) === 0) {
         if(weaponLevel === 1) lasers.push({ x: paddle.x, y: paddle.y - 20, vx: 0, vy: -20 });
         else if (weaponLevel === 2) { lasers.push({ x: paddle.x-15, y: paddle.y-15, vx:0, vy:-20 }, { x: paddle.x+15, y: paddle.y-15, vx:0, vy:-20 }); }
-        else { lasers.push({ x: paddle.x, y: paddle.y-20, vx:0, vy:-20 }, { x: paddle.x-15, y: paddle.y-15, vx:-5, vy:-18 }, { x: paddle.x+15, y: paddle.y-15, vx:5, vy:-18 }); }
+        else { lasers.push({ x: paddle.x, y: paddle.y-20, vx:0, vy:-20 }, { x: paddle.x-15, y: paddle.y-15, vx:-4, vy:-18 }, { x: paddle.x+15, y: paddle.y-15, vx:4, vy:-18 }); }
     }
     
     ctx.fillStyle = '#fff';
@@ -460,7 +478,7 @@ function gameLoop() {
         if(lasers[i].y < -20 || lasers[i].y > canvas.height + 20 || lasers[i].x < -20 || lasers[i].x > canvas.width + 20) lasers.splice(i,1);
     }
 
-    // ASTEROIDES MASIVOS
+    // ASTEROIDES DIAGONALES 
     if((gamePhase === 1 || gamePhase === 6) && Math.random() < (gamePhase === 6 ? 0.25 : 0.08)) {
         let spawnSide = Math.random(); let ax, ay, avx, avy;
         if(gamePhase === 6) { 
@@ -495,12 +513,11 @@ function gameLoop() {
         else if(a.y > canvas.height + 50 || a.x < -100 || a.x > canvas.width + 100) asteroids.splice(i,1);
     }
 
-    // OLEADAS DE ENEMIGOS (Sin tiempos muertos)
+    // OLEADAS DE ENEMIGOS 
     let activeEnemyTypes = [];
     if(gamePhase === 2) activeEnemyTypes = [1, 5]; 
     else if(gamePhase === 3) activeEnemyTypes = [2, 1]; 
     else if(gamePhase === 4) activeEnemyTypes = [3, 4]; 
-    // Rellenos si matas a los jefes rapido
     else if(gamePhase === 5 && bosses.length === 0) activeEnemyTypes = [1, 4, 5]; 
     else if(gamePhase === 8 && bosses.length === 0) activeEnemyTypes = [2, 3, 6]; 
     else if(gamePhase === 10 && bosses.length === 0) activeEnemyTypes = [1, 2, 3, 4, 5, 6]; 
@@ -521,12 +538,12 @@ function gameLoop() {
     for(let i=drops.length-1; i>=0; i--) {
         let d = drops[i]; d.aliveTime++; 
         
-        if(gamePhase >= 13) { // Huida
+        if(gamePhase >= 13) { 
             d.vy -= 0.2; d.y += d.vy; d.x += d.vx;
         } else {
-            if(d.type === 2) { d.x += (paddle.x - d.x) * 0.015; d.y += d.vy * 0.7; } // Acorazado te sigue
-            else if(d.type === 4) { d.x += (paddle.x - d.x) * 0.045; d.y += 6.5; } // Kamikaze mas rapido
-            else if(d.type === 5) { d.y += 9; d.x += Math.sin(d.aliveTime*0.3)*10; } // Swarm erratico
+            if(d.type === 2) { d.x += (paddle.x - d.x) * 0.015; d.y += d.vy * 0.7; } 
+            else if(d.type === 4) { d.x += (paddle.x - d.x) * 0.045; d.y += 6.5; } 
+            else if(d.type === 5) { d.y += 9; d.x += Math.sin(d.aliveTime*0.3)*10; } 
             else if(d.type !== 6) { d.x += d.vx; if(d.x < 30 || d.x > canvas.width - 30) d.vx *= -1; d.y += d.vy; }
             
             if(d.type === 3 && d.aliveTime % 60 === 0) enemyLasers.push({ x: d.x, y: d.y + 20, vx: 0, vy: 8 });
